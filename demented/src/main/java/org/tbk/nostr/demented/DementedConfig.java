@@ -8,13 +8,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.tbk.nostr.demented.impl.ExampleConnectionEstablishedHandler;
+import org.tbk.nostr.demented.domain.event.EventEntityService;
 import org.tbk.nostr.demented.impl.NostrSupportService;
 import org.tbk.nostr.identity.MoreIdentities;
 import org.tbk.nostr.identity.Signer;
 import org.tbk.nostr.identity.SimpleSigner;
-import org.tbk.nostr.demented.domain.event.EventEntityService;
-import org.tbk.nostr.relay.handler.ConnectionEstablishedHandler;
 
 @Slf4j
 @Configuration(proxyBeanMethods = false)
@@ -38,10 +36,5 @@ class DementedConfig {
     @Bean
     NostrSupportService nipSupportService(EventEntityService eventEntityService, ThreadPoolTaskExecutor asyncThreadPoolTaskExecutor) {
         return new NostrSupportService(eventEntityService, asyncThreadPoolTaskExecutor);
-    }
-
-    @Bean
-    ConnectionEstablishedHandler exampleConnectionEstablishedHandler() {
-        return new ExampleConnectionEstablishedHandler(this.properties);
     }
 }

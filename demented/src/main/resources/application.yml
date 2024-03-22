@@ -38,7 +38,6 @@ org.tbk.nostr.demented.relay:
     passphrase: ''
   async-executor:
     max-pool-size: 1 # sqlite needs a single thread
-  greeting: 'GM'
   initial-query-limit: 100
 
 org.tbk.nostr.relay:

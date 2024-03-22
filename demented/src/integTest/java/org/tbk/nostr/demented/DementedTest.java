@@ -50,7 +50,6 @@ class DementedTest {
         assertThat(applicationProperties.isStartupEventsEnabled(), is(true));
         assertThat(applicationProperties.getIdentity().isPresent(), is(true));
         assertThat(applicationProperties.getAsyncExecutor().getMaxPoolSize(), is(10));
-        assertThat(applicationProperties.getGreeting().isPresent(), is(false));
         assertThat(applicationProperties.getInitialQueryLimit(), is(210));
 
         assertThat(relayProperties.getMaxLimitPerFilter(), is(2100));

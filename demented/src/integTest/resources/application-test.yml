@@ -23,7 +23,6 @@ spring.docker.compose:
 org.tbk.nostr.demented.relay:
   async-executor:
     max-pool-size: 10
-  greeting: null
   initial-query-limit: 210
 
 org.tbk.nostr.relay:

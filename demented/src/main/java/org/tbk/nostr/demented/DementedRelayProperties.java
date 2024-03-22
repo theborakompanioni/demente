@@ -31,10 +31,6 @@ public class DementedRelayProperties implements Validator {
     @Nullable
     private Boolean startupEventsEnabled;
 
-    // initial message sent to users on websocket connection established
-    @Nullable
-    private String greeting;
-
     @Nullable
     private Integer initialQueryLimit;
 
@@ -47,10 +43,6 @@ public class DementedRelayProperties implements Validator {
 
     public Optional<Boolean> getStartupEventsEnabled() {
         return Optional.ofNullable(startupEventsEnabled);
-    }
-
-    public Optional<String> getGreeting() {
-        return Optional.ofNullable(greeting).filter(it -> !it.isBlank());
     }
 
     public int getInitialQueryLimit() {
