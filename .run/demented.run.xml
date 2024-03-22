@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="demented" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.tbk.nostr.demented.Demented" />
+    <module name="demente.demented.main" />
+    <option name="PROGRAM_PARAMETERS" value="--spring.profiles.active=development" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/demented" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.tbk.nostr.demented.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
