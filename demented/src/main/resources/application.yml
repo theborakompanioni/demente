@@ -1,0 +1,56 @@
+spring.application.name: 'demented'
+spring.http.log-request-details: false
+
+spring.lifecycle.timeout-per-shutdown-phase: 30s
+spring.threads.virtual.enabled: true
+
+server.port: 8080
+server.compression.enabled: true
+server.shutdown: graceful
+
+management.server.port: 9001
+
+# LOGGING
+logging.file.path: ./var/log
+logging.file.name: application.log
+logging.config: classpath:logback.xml
+logging.level.org.springframework: INFO
+#logging.level.web: DEBUG
+
+spring.datasource.url: 'jdbc:sqlite:demented.db?foreign_keys=true&journal_mode=WAL&synchronous=OFF&temp_store=MEMORY&page_size=32768&mmap_size=30000000000'
+spring.datasource.driver-class-name: org.sqlite.JDBC
+spring.datasource.hikari.pool-name: SQLitePool
+spring.datasource.hikari.connection-timeout: 30000 #maximum number of milliseconds that a client will wait for a connection
+spring.datasource.hikari.connection-test-query: 'SELECT 1'
+spring.datasource.hikari.minimum-idle: 1 #minimum number of idle connections maintained by HikariCP in a connection pool
+spring.datasource.hikari.maximum-pool-size: 1 #maximum pool size
+spring.datasource.hikari.idle-timeout: 45000 #maximum idle time for connection
+spring.datasource.hikari.max-lifetime: 60000 # maximum lifetime in milliseconds of a connection in the pool after it is closed.
+spring.datasource.hikari.auto-commit: true #default auto-commit behavior.
+
+spring.jpa.properties.hibernate.dialect: org.hibernate.community.dialect.SQLiteDialect
+spring.jpa.properties.hibernate.jdbc.time_zone: UTC
+spring.jpa.open-in-view: false
+
+org.tbk.nostr.demented.relay:
+  identity:
+    mnemonics: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+    passphrase: ''
+  async-executor:
+    max-pool-size: 1 # sqlite needs a single thread
+  greeting: 'GM'
+  initial-query-limit: 100
+
+org.tbk.nostr.relay:
+  websocket-path: '/'
+  max-limit-per-filter: 1000
+  max-filter-count: 21
+
+org.tbk.nostr.nip11:
+  enabled: true
+  relay-info:
+    name: ${spring.application.name}
+    description: A nostr relay implementation
+    supported-nips: [1, 9, 11, 40]
+    software: https://github.com/theborakompanioni/demented
+    version: 1

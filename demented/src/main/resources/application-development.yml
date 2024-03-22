@@ -1,0 +1,16 @@
+spring.application.name: 'demented-dev'
+spring.http.log-request-details: true
+
+# LOGGING
+logging.file.name: application-dev.log
+logging.config: classpath:logback-development.xml
+logging.level.org.springframework: INFO
+logging.level.org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
+logging.level.web: DEBUG
+logging.level.org.tbk.nostr: DEBUG
+logging.level.org.tbk.nostr.demented.domain.event: TRACE
+
+spring.datasource.url: 'jdbc:sqlite:demented-dev.db?foreign_keys=true&journal_mode=WAL&synchronous=OFF&temp_store=MEMORY&page_size=32768&mmap_size=30000000000'
+
+spring.jpa.properties.hibernate.format_sql: true
+spring.jpa.properties.hibernate.show_sql: false

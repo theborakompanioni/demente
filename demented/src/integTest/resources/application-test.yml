@@ -1,0 +1,34 @@
+spring.application.name: 'demented-test'
+spring.http.log-request-details: false
+
+logging.file.name: application-test.log
+logging.level.org.tbk.nostr: INFO
+
+spring.jpa.properties.hibernate.format_sql: false
+spring.jpa.properties.hibernate.show_sql: false
+
+spring.datasource.url: 'jdbc:postgres://regtest_nostr_relay0:regtest_nostr_relay0@regtest_db:15432/regtest_nostr_relay0'
+spring.datasource.driver-class-name: org.postgresql.Driver
+spring.datasource.hikari.pool-name: PostgresPool
+spring.datasource.hikari.maximum-pool-size: 10
+
+spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
+spring.docker.compose:
+  enabled: true
+  file: ../docker/regtest/pg/docker-compose.yml
+  stop.command: DOWN # STOP is default, DOWN stops and removes containers and networks
+  skip.in-tests: false
+
+org.tbk.nostr.demented.relay:
+  async-executor:
+    max-pool-size: 10
+  greeting: null
+  initial-query-limit: 210
+
+org.tbk.nostr.relay:
+  websocket-path: '/'
+  max-limit-per-filter: 2100
+  max-filter-count: 42
+  created-at-lower-limit: 2
+  created-at-upper-limit: 9223372036854775806 # Long.MAX_VALUE - 1

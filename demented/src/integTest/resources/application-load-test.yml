@@ -1,0 +1,7 @@
+spring.application.name: 'demented-load-test'
+
+logging.file.name: application-load-test.log
+logging.level.org.tbk.nostr: INFO
+
+#spring.datasource.hikari.maximum-pool-size: 20
+org.tbk.nostr.demented.relay.async-executor.max-pool-size: 10
