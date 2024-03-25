@@ -10,6 +10,7 @@ byteBuddy {
 }
 
 dependencies {
+    implementation "com.github.theborakompanioni.nostr-spring-boot-starter:nostr-relay-utils:${nostrSpringBootStarterVersion}"
     implementation "com.github.theborakompanioni.nostr-spring-boot-starter:nostr-relay-starter:${nostrSpringBootStarterVersion}"
 
     implementation "fr.acinq.bitcoin:bitcoin-kmp-jvm:${acinqBitcoinKmpVersion}"

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.boot.web.context.WebServerPortFileWriter;
@@ -39,15 +40,16 @@ public class Demented {
                 .run(args);
     }
 
-    public static ApplicationListener<?> applicationPidFileWriter() {
+    private static ApplicationListener<?> applicationPidFileWriter() {
         return new ApplicationPidFileWriter("application.pid");
     }
 
-    public static ApplicationListener<?> webServerPortFileWriter() {
+    private static ApplicationListener<?> webServerPortFileWriter() {
         return new WebServerPortFileWriter("application.port");
     }
 
     @Bean
+    @ConditionalOnBean(Signer.class)
     ApplicationRunner insertStartupEvents(DementedRelayProperties properties,
                                           Signer serverSigner,
                                           EventEntityService eventEntityService) {
