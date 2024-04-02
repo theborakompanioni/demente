@@ -45,7 +45,6 @@ public class V1__init extends BaseJavaMigration {
                         pubkey text NOT NULL,
                         kind integer NOT NULL,
                         created_at bigint NOT NULL,
-                        tags text,
                         content text NOT NULL,
                         sig bytea NOT NULL,
                         -- other metadata
@@ -98,7 +97,6 @@ public class V1__init extends BaseJavaMigration {
                         pubkey text NOT NULL,
                         kind integer NOT NULL,
                         created_at integer NOT NULL,
-                        tags text,
                         content text NOT NULL,
                         sig blob NOT NULL,
                         -- other metadata
