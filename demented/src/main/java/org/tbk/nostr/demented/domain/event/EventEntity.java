@@ -36,6 +36,7 @@ public class EventEntity extends AbstractAggregateRoot<EventEntity> implements A
     @Convert(converter = MoreConverter.InstantToSecondsConverter.class)
     private final Instant createdAt;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "event_id", updatable = false)
     @OrderColumn(name = "position", updatable = false)
     private final List<TagEntity> tags = new ArrayList<>();
