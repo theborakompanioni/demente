@@ -10,8 +10,8 @@ byteBuddy {
 }
 
 dependencies {
-    implementation "com.github.theborakompanioni.nostr-spring-boot-starter:nostr-relay-utils:${nostrSpringBootStarterVersion}"
-    implementation "com.github.theborakompanioni.nostr-spring-boot-starter:nostr-relay-starter:${nostrSpringBootStarterVersion}"
+    implementation "io.github.theborakompanioni:nostr-relay-utils:${nostrSpringBootStarterVersion}"
+    implementation "io.github.theborakompanioni:nostr-relay-starter:${nostrSpringBootStarterVersion}"
 
     implementation "fr.acinq.bitcoin:bitcoin-kmp-jvm:${acinqBitcoinKmpVersion}"
     implementation "fr.acinq.secp256k1:secp256k1-kmp-jni-jvm:${acinqSecp256k1KmpVersion}"
@@ -40,8 +40,8 @@ dependencies {
 
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
-    testImplementation "com.github.theborakompanioni.nostr-spring-boot-starter:nostr-template:${nostrSpringBootStarterVersion}"
-    testImplementation "com.github.theborakompanioni.nostr-spring-boot-starter:nostr-client:${nostrSpringBootStarterVersion}"
+    testImplementation "io.github.theborakompanioni:nostr-template:${nostrSpringBootStarterVersion}"
+    testImplementation "io.github.theborakompanioni:nostr-client:${nostrSpringBootStarterVersion}"
     integTestImplementation "org.postgresql:postgresql:${postgresqlVersion}"
     integTestImplementation 'org.springframework.boot:spring-boot-docker-compose'
 }
