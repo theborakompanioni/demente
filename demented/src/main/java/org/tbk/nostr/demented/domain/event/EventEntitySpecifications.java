@@ -11,10 +11,12 @@ import org.tbk.nostr.base.EventUri;
 import org.tbk.nostr.base.IndexedTag;
 import org.tbk.nostr.base.Kind;
 import org.tbk.nostr.proto.Filter;
+import org.tbk.nostr.proto.TagFilter;
 
 import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class EventEntitySpecifications {
 
@@ -87,6 +89,17 @@ public final class EventEntitySpecifications {
         return (root, cq, cb) -> cb.isNotNull(root.get("deletedAt"));
     }
 
+    private static Specification<EventEntity> hasAnyTag(TagFilter tagFilter) {
+        if (tagFilter.getName().length() != 1) {
+            return Specification.where(null);
+        }
+
+        IndexedTag indexedTag = IndexedTag.valueOf(tagFilter.getName());
+        return Specification.anyOf(tagFilter.getValuesList().stream()
+                .map(it -> hasTagWithFirstValue(indexedTag, it))
+                .collect(Collectors.toList()));
+    }
+
     public static Specification<EventEntity> hasTagWithoutValues(IndexedTag tagName) {
         return hasTagWithFirstValue(tagName, null);
     }
@@ -101,8 +114,8 @@ public final class EventEntitySpecifications {
         };
     }
 
-    private static final Descriptors.FieldDescriptor untilFieldDescription = Filter.getDescriptor().findFieldByNumber(Filter.UNTIL_FIELD_NUMBER);
-    private static final Descriptors.FieldDescriptor sinceFieldDescription = Filter.getDescriptor().findFieldByNumber(Filter.SINCE_FIELD_NUMBER);
+    private static final Descriptors.FieldDescriptor untilFieldDescriptor = Filter.getDescriptor().findFieldByNumber(Filter.UNTIL_FIELD_NUMBER);
+    private static final Descriptors.FieldDescriptor sinceFieldDescriptor = Filter.getDescriptor().findFieldByNumber(Filter.SINCE_FIELD_NUMBER);
 
     public static Specification<EventEntity> fromFilter(Filter filter) {
         Specification<EventEntity> idsSpecification = Specification.anyOf(filter.getIdsList().stream()
@@ -119,15 +132,19 @@ public final class EventEntitySpecifications {
                 .map(EventEntitySpecifications::hasKind)
                 .toList());
 
+        Specification<EventEntity> tagsSpecification = Specification.anyOf(filter.getTagsList().stream()
+                .map(EventEntitySpecifications::hasAnyTag)
+                .toList());
+
         Specification<EventEntity> sinceSpecification = Optional.of(filter)
-                .filter(it -> it.hasField(sinceFieldDescription))
+                .filter(it -> it.hasField(sinceFieldDescriptor))
                 .map(Filter::getSince)
                 .map(Instant::ofEpochSecond)
                 .map(EventEntitySpecifications::isCreatedAfterInclusive)
                 .orElseGet(() -> Specification.where(null));
 
         Specification<EventEntity> untilSpecification = Optional.of(filter)
-                .filter(it -> it.hasField(untilFieldDescription))
+                .filter(it -> it.hasField(untilFieldDescriptor))
                 .map(Filter::getUntil)
                 .map(Instant::ofEpochSecond)
                 .map(EventEntitySpecifications::isCreatedBeforeInclusive)
@@ -137,8 +154,10 @@ public final class EventEntitySpecifications {
                 idsSpecification,
                 authorsSpecification,
                 kindsSpecification,
+                tagsSpecification,
                 sinceSpecification,
                 untilSpecification
         );
     }
 }
+
