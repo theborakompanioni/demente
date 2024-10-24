@@ -51,5 +51,5 @@ org.tbk.nostr.nip11:
     name: ${spring.application.name}
     description: A nostr relay implementation
     supported-nips: [1, 9, 11, 40]
-    software: https://github.com/theborakompanioni/demented
-    version: 1
+    software: https://github.com/theborakompanioni/demente
+    version: 0.0.1
