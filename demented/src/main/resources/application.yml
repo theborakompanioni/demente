@@ -9,6 +9,7 @@ server.compression.enabled: true
 server.shutdown: graceful
 
 management.server.port: 9001
+management.endpoints.web.exposure.include: 'health,info'
 
 # LOGGING
 logging.file.path: ./var/log

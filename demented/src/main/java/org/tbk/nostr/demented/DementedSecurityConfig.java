@@ -3,6 +3,9 @@ package org.tbk.nostr.demented;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +52,7 @@ class DementedSecurityConfig implements WebSecurityCustomizer {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll()
                         .requestMatchers(
                                 antMatcher(nostrRelayProperties.getWebsocketPath()),
                                 antMatcher("/index.html")
