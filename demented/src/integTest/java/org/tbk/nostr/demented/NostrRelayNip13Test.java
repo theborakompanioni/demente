@@ -1,5 +1,6 @@
 package org.tbk.nostr.demented;
 
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,7 +40,7 @@ class NostrRelayNip13Test {
     }
 
     @Test
-    void itShouldPublishEventMeetingTargetDifficulty0() {
+    void itShouldAcceptEventMeetingTargetDifficulty() {
         Signer signer = SimpleSigner.random();
 
         Event.Builder eventBuilder = Nip13.mineEvent(
@@ -61,7 +62,7 @@ class NostrRelayNip13Test {
     }
 
     @Test
-    void itShouldDeclineEventNotMeetingTargetDifficulty0() {
+    void itShouldDeclineEventNotMeetingTargetDifficulty() {
         Signer signer = SimpleSigner.random();
 
         Event event = MoreEvents.createFinalizedTextNote(signer, "GM");
@@ -75,10 +76,60 @@ class NostrRelayNip13Test {
         assertThat(ok.getEventId(), is(event.getId()));
         assertThat(ok.getSuccess(), is(false));
 
-        String expectedMessage = "Error: Difficulty %d is less than %d".formatted(
+        String expectedMessage = "pow: Difficulty %d is less than %d.".formatted(
                 Nip13.calculateDifficulty(event),
                 nip13ExtensionProperties.getMinPowDifficulty()
         );
         assertThat(ok.getMessage(), is(expectedMessage));
     }
+
+    @Test
+    void itShouldDeclineEventMeetingTargetButDoesNotCommitToDifficulty() {
+        Signer signer = SimpleSigner.random();
+
+        Event.Builder eventBuilder = Nip13.mineEvent(
+                Nip1.createTextNote(signer.getPublicKey(), "GM"),
+                nip13ExtensionProperties.getMinPowDifficulty(),
+                Nip13.nonceWithoutCommitment(0).toBuilder()
+        );
+
+        Event event = MoreEvents.finalize(signer, eventBuilder);
+
+        assertThat("sanity check", Nip13.meetsTargetDifficulty(event, nip13ExtensionProperties.getMinPowDifficulty(), false), is(true));
+        assertThat("sanity check", Nip13.meetsTargetDifficulty(event, nip13ExtensionProperties.getMinPowDifficulty(), true), is(false));
+
+        OkResponse ok = nostrTemplate.send(event)
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(ok.getEventId(), is(event.getId()));
+        assertThat(ok.getSuccess(), is(false));
+
+        assertThat(ok.getMessage(), is("pow: Missing or invalid pow commitment."));
+    }
+    @Test
+    void itShouldDeclineEventMeetingTargetButCommitsToWrongDifficulty() {
+        Signer signer = SimpleSigner.random();
+
+        Event.Builder eventBuilder = Nip13.mineEvent(
+                Nip1.createTextNote(signer.getPublicKey(), "GM"),
+                nip13ExtensionProperties.getMinPowDifficulty(),
+                Nip13.nonce(0, nip13ExtensionProperties.getMinPowDifficulty() + 1).toBuilder()
+        );
+
+        Event event = MoreEvents.finalize(signer, eventBuilder);
+
+        assertThat("sanity check", Nip13.meetsTargetDifficulty(event, nip13ExtensionProperties.getMinPowDifficulty(), false), is(true));
+        assertThat("sanity check", Nip13.meetsTargetDifficulty(event, nip13ExtensionProperties.getMinPowDifficulty(), true), is(false));
+
+        OkResponse ok = nostrTemplate.send(event)
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(ok.getEventId(), is(event.getId()));
+        assertThat(ok.getSuccess(), is(false));
+
+        assertThat(ok.getMessage(), is("pow: Missing or invalid pow commitment."));
+    }
 }
+

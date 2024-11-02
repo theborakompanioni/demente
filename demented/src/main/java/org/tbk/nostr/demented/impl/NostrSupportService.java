@@ -63,21 +63,21 @@ public class NostrSupportService implements NostrSupport, Nip1Support, Nip9Suppo
 
     private static OkResponse.Builder handleEventMessageException(Exception e, OkResponse.Builder okBuilder) {
         if (e instanceof UncategorizedDataAccessException udae) {
-            okBuilder.setMessage("Error: %s".formatted("Undefined storage error."));
+            okBuilder.setMessage("error: %s".formatted("Undefined storage error."));
 
             Throwable mostSpecificCause = udae.getMostSpecificCause();
             if (mostSpecificCause instanceof SQLiteException sqliteException) {
-                okBuilder.setMessage("Error: %s".formatted("Storage error (%d).".formatted(sqliteException.getResultCode().code)));
+                okBuilder.setMessage("error: %s".formatted("Storage error (%d).".formatted(sqliteException.getResultCode().code)));
                 switch (sqliteException.getResultCode()) {
                     case SQLITE_CONSTRAINT_UNIQUE, SQLITE_CONSTRAINT_PRIMARYKEY ->
-                            okBuilder.setMessage("Error: %s".formatted("Duplicate event."));
-                    case SQLITE_CONSTRAINT_CHECK -> okBuilder.setMessage("Error: %s".formatted("Check failed."));
+                            okBuilder.setMessage("error: %s".formatted("Duplicate event."));
+                    case SQLITE_CONSTRAINT_CHECK -> okBuilder.setMessage("error: %s".formatted("Check failed."));
                 }
             }
         } else if (e instanceof DataIntegrityViolationException) {
-            okBuilder.setMessage("Error: %s".formatted("Duplicate event."));
+            okBuilder.setMessage("error: %s".formatted("Duplicate event."));
         } else {
-            okBuilder.setMessage("Error: %s".formatted("Unknown reason."));
+            okBuilder.setMessage("error: %s".formatted("Unknown reason."));
         }
 
         return okBuilder;

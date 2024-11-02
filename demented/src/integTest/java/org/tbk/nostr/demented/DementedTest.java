@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.tbk.nostr.identity.MoreIdentities;
+import org.tbk.nostr.identity.SimpleSigner;
 import org.tbk.nostr.proto.Event;
 import org.tbk.nostr.relay.config.NostrRelayProperties;
 import org.tbk.nostr.template.NostrTemplate;
@@ -61,7 +62,8 @@ class DementedTest {
         XonlyPublicKey applicationPubkey = applicationProperties.getIdentity()
                 .map(DementedRelayProperties.IdentityProperties::getSeed)
                 .map(MoreIdentities::fromSeed)
-                .map(PrivateKey::xOnlyPublicKey)
+                .map(SimpleSigner::fromIdentity)
+                .map(SimpleSigner::getPublicKey)
                 .orElseThrow();
 
         List<Event> events = nostrTemplate.fetchEventByAuthor(applicationPubkey)

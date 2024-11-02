@@ -20,7 +20,7 @@ ext {
     springBootVersion = springBootGradlePluginVersion
     springShellVersion = '3.3.3'
     protobufGradleVersion = '0.9.4'
-    nostrSpringBootStarterVersion = '0.0.1'
+    nostrSpringBootStarterVersion = '0.0.2'
 }
 
 // hack: 2021-11-10T00:00Z - change this timestamp to invalidate GitHub Actions gradle caches.

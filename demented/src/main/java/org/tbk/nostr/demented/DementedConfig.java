@@ -35,7 +35,7 @@ class DementedConfig {
         return properties.getIdentity()
                 .map(DementedRelayProperties.IdentityProperties::getSeed)
                 .map(MoreIdentities::fromSeed)
-                .map(SimpleSigner::fromPrivateKey)
+                .map(SimpleSigner::fromIdentity)
                 .orElseThrow();
     }
 
