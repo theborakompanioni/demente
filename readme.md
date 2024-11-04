@@ -47,6 +47,12 @@ curl -H "Accept: application/nostr+json" http://localhost:8080 | jq
 }
 ```
 
+### Docker
+After you have built the application run:
+```shell
+./gradlew clean bootJar && docker compose -f docker-compose-devel.yml up --build
+```
+
 ## Contributing
 All contributions and ideas are always welcome. For any question, bug or feature request,
 please create an [issue](https://github.com/theborakompanioni/demente/issues).
