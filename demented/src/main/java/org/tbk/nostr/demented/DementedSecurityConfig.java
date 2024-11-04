@@ -54,9 +54,12 @@ class DementedSecurityConfig implements WebSecurityCustomizer {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll()
                         .requestMatchers(
-                                antMatcher(nostrRelayProperties.getWebsocketPath()),
-                                antMatcher("/index.html")
+                                antMatcher(nostrRelayProperties.getWebsocketPath())
                         ).permitAll()
+                        .requestMatchers(
+                                PathRequest.toStaticResources().atCommonLocations(),
+                                antMatcher("/index.html"))
+                        .permitAll()
                         .anyRequest().authenticated()
                 );
 
