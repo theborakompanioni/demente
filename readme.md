@@ -19,9 +19,9 @@ demente
 ./gradlew test integrationTest --rerun-tasks --no-parallel
 ```
 
-Run full test suite (including load tests):
+Run full test suite (including load & end-to-end tests):
 ```shell script
-CI=true ./gradlew test integrationTest --rerun-tasks --no-parallel
+CI=true ./gradlew test integrationTest e2eTest --rerun-tasks --no-parallel
 ```
 
 ## Run
@@ -51,6 +51,11 @@ curl -H "Accept: application/nostr+json" http://localhost:8080 | jq
 After you have built the application run:
 ```shell
 ./gradlew clean bootJar && docker compose -f docker-compose-devel.yml up --build
+```
+
+```shell
+docker build -t theborakompanioni/demented .
+docker run -p 8080:8080 --name demented theborakompanioni/demented
 ```
 
 ## Contributing
