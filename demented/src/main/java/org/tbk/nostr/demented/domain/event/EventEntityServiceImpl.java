@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbk.nostr.base.EventId;
+import org.tbk.nostr.base.Kinds;
 import org.tbk.nostr.demented.DementedRelayProperties;
 import org.tbk.nostr.nips.Nip9;
 import org.tbk.nostr.proto.Event;
@@ -66,12 +67,11 @@ class EventEntityServiceImpl implements EventEntityService {
         return events.exists(specs);
     }
 
-
     @Override
     public List<EventId> markDeleted(XonlyPublicKey author, Specification<EventEntity> specs) {
         List<EventEntity> deletableEvents = events.findAll(specs
                 .and(EventEntitySpecifications.hasPubkey(author))
-                .and(Specification.not(EventEntitySpecifications.hasKind(Nip9.kind())))
+                .and(Specification.not(EventEntitySpecifications.hasKind(Kinds.kindDeletion)))
                 .and(EventEntitySpecifications.isNotDeleted()));
 
         Instant now = Instant.now();

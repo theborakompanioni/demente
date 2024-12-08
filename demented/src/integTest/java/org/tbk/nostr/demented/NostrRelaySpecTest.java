@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.tbk.nostr.base.EventId;
 import org.tbk.nostr.base.IndexedTag;
+import org.tbk.nostr.base.Kind;
 import org.tbk.nostr.base.Metadata;
 import org.tbk.nostr.identity.Signer;
 import org.tbk.nostr.identity.SimpleSigner;
@@ -236,9 +237,9 @@ class NostrRelaySpecTest {
         Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM0")
                 .addTags(MoreTags.a("")));
         Event invalidEvent1 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM1")
-                .addTags(MoreTags.a(MoreKinds.minValue() - 1, signer.getPublicKey())));
+                .addTags(MoreTags.a(Kind.minValue() - 1, signer.getPublicKey())));
         Event invalidEvent2 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM2")
-                .addTags(MoreTags.a(MoreKinds.maxValue() + 1, signer.getPublicKey())));
+                .addTags(MoreTags.a(Kind.maxValue() + 1, signer.getPublicKey())));
         Event invalidEvent3 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM3")
                 .addTags(MoreTags.a("", signer.getPublicKey().value.toHex())));
         Event invalidEvent4 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM4")
@@ -370,7 +371,7 @@ class NostrRelaySpecTest {
         Event event0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM0")
                 .addTags(MoreTags.named("e", "00".repeat(32)))
                 .addTags(MoreTags.named("e", "00".repeat(32)))
-                .addTags(MoreTags.named("a", "%d:%s".formatted(MoreKinds.maxValue(), signer.getPublicKey().value.toHex())))
+                .addTags(MoreTags.named("a", "%d:%s".formatted(Kind.maxValue(), signer.getPublicKey().value.toHex())))
                 .addTags(MoreTags.named("any", "1"))
                 .addTags(MoreTags.named("any", "2"))
                 .addTags(MoreTags.named("any", "3"))
@@ -408,7 +409,7 @@ class NostrRelaySpecTest {
                 .orElseThrow();
         assertThat(oks.stream().filter(OkResponse::getSuccess).count(), is((long) events.size()));
 
-        List<Event> fetchedEvents = nostrTemplate.fetchEventByAuthor(signer0.getPublicKey())
+        List<Event> fetchedEvents = nostrTemplate.fetchEventsByAuthor(signer0.getPublicKey())
                 .collectList()
                 .blockOptional(Duration.ofSeconds(5))
                 .orElseThrow();
@@ -884,10 +885,10 @@ class NostrRelaySpecTest {
     }
 
     @RepeatedTest(5)
-    void itShouldVerifyParameterizedReplaceableEventBehaviour0() {
+    void itShouldVerifyAddressableEventBehaviour0() {
         Signer signer = SimpleSigner.random();
 
-        Event event0 = MoreEvents.finalize(signer, Nip1.createParameterizedReplaceableEvent(signer.getPublicKey(), "GM", "d"));
+        Event event0 = MoreEvents.finalize(signer, Nip1.createAddressableEvent(signer.getPublicKey(), "GM", "d"));
         Event event1Newer = MoreEvents.finalize(signer, event0.toBuilder().setCreatedAt(event0.getCreatedAt() + 1));
 
         assertThat("sanity check", event1Newer.getCreatedAt(), is(greaterThan(event0.getCreatedAt())));
@@ -923,12 +924,12 @@ class NostrRelaySpecTest {
     }
 
     @RepeatedTest(5)
-    void itShouldVerifyParameterizedReplaceableEventBehaviour1NewerEventsDoNotExist() {
+    void itShouldVerifyAddressableEventBehaviour1NewerEventsDoNotExist() {
         Signer signer = SimpleSigner.random();
 
-        Event event0 = MoreEvents.finalize(signer, Nip1.createParameterizedReplaceableEvent(signer.getPublicKey(), "GM", "test"));
+        Event event0 = MoreEvents.finalize(signer, Nip1.createAddressableEvent(signer.getPublicKey(), "GM", "test"));
         Event event1Older = MoreEvents.finalize(signer, event0.toBuilder().setCreatedAt(event0.getCreatedAt() - 1));
-        Event event2DifferentTag = MoreEvents.finalize(signer, Nip1.createParameterizedReplaceableEvent(signer.getPublicKey(), "GM",
+        Event event2DifferentTag = MoreEvents.finalize(signer, Nip1.createAddressableEvent(signer.getPublicKey(), "GM",
                         MoreTags.findByNameSingle(event0, IndexedTag.d.name())
                                 .map(it -> it.getValues(0))
                                 .orElseThrow()
@@ -977,10 +978,10 @@ class NostrRelaySpecTest {
     }
 
     @RepeatedTest(5)
-    void itShouldVerifyParameterizedReplaceableEventBehaviour2NewerEventsExist() {
+    void itShouldVerifyAddressableEventBehaviour2NewerEventsExist() {
         Signer signer = SimpleSigner.random();
 
-        Event event0 = MoreEvents.finalize(signer, Nip1.createParameterizedReplaceableEvent(signer.getPublicKey(), "GM", "d"));
+        Event event0 = MoreEvents.finalize(signer, Nip1.createAddressableEvent(signer.getPublicKey(), "GM", "d"));
         Event event1Newer = MoreEvents.finalize(signer, event0.toBuilder().setCreatedAt(event0.getCreatedAt() + 1));
         Event event2Older = MoreEvents.finalize(signer, event0.toBuilder().setCreatedAt(event0.getCreatedAt() - 1));
 
@@ -1018,10 +1019,10 @@ class NostrRelaySpecTest {
     }
 
     @Test
-    void itShouldVerifyParameterizedReplaceableEventBehaviour3MissingDTag() {
+    void itShouldVerifyAddressableEventBehaviour3MissingDTag() {
         Signer signer = SimpleSigner.random();
 
-        Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createParameterizedReplaceableEvent(signer.getPublicKey(), "GM", "<will me removed>")
+        Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createAddressableEvent(signer.getPublicKey(), "GM", "<will me removed>")
                 .clearTags());
 
         OkResponse ok0 = nostrTemplate.send(invalidEvent0)
@@ -1033,10 +1034,10 @@ class NostrRelaySpecTest {
     }
 
     @Test
-    void itShouldVerifyParameterizedReplaceableEventBehaviour3MissingFirstValueOfDTag() {
+    void itShouldVerifyAddressableEventBehaviour3MissingFirstValueOfDTag() {
         Signer signer = SimpleSigner.random();
 
-        Event event0WithEmptyDTag = MoreEvents.finalize(signer, Nip1.createParameterizedReplaceableEvent(signer.getPublicKey(), "GM", null));
+        Event event0WithEmptyDTag = MoreEvents.finalize(signer, Nip1.createAddressableEvent(signer.getPublicKey(), "GM", null));
 
         OkResponse ok0 = nostrTemplate.send(event0WithEmptyDTag)
                 .blockOptional(Duration.ofSeconds(5))
@@ -1048,10 +1049,10 @@ class NostrRelaySpecTest {
 
     @Test
     @Disabled("NostrTemplate should have a method to send plain json")
-    void itShouldVerifyParameterizedReplaceableEventBehaviour4NullFirstValueOfDTag() {
+    void itShouldVerifyAddressableEventBehaviour4NullFirstValueOfDTag() {
         Signer signer = SimpleSigner.random();
 
-        Event prototype = MoreEvents.finalize(signer, Nip1.createParameterizedReplaceableEvent(signer.getPublicKey(), "GM", "test"));
+        Event prototype = MoreEvents.finalize(signer, Nip1.createAddressableEvent(signer.getPublicKey(), "GM", "test"));
         /*
         // TODO: must serialize as json and send plain
         OkResponse ok0 = nostrTemplate.send("TODO.. plain json here.. send a `d` tag like `["d", null, "value"]`")
@@ -1064,10 +1065,10 @@ class NostrRelaySpecTest {
     }
 
     @Test
-    void itShouldVerifyParameterizedReplaceableEventBehaviour5MultipleDTags() {
+    void itShouldVerifyAddressableEventBehaviour5MultipleDTags() {
         Signer signer = SimpleSigner.random();
 
-        Event.Builder prototype = Nip1.createParameterizedReplaceableEvent(signer.getPublicKey(), "GM", null).clearTags();
+        Event.Builder prototype = Nip1.createAddressableEvent(signer.getPublicKey(), "GM", null).clearTags();
         Event event0WithEmptyDTag = MoreEvents.finalize(signer, prototype
                 .addTags(MoreTags.d("0"))
                 .addTags(MoreTags.d()));

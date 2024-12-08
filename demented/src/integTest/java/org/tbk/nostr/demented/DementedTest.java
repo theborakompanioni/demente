@@ -66,7 +66,7 @@ class DementedTest {
                 .map(SimpleSigner::getPublicKey)
                 .orElseThrow();
 
-        List<Event> events = nostrTemplate.fetchEventByAuthor(applicationPubkey)
+        List<Event> events = nostrTemplate.fetchEventsByAuthor(applicationPubkey)
                 .collectList()
                 .blockOptional(Duration.ofSeconds(5))
                 .orElseThrow();

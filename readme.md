@@ -21,7 +21,7 @@ demente
 
 Run full test suite (including load & end-to-end tests):
 ```shell script
-CI=true ./gradlew test integrationTest e2eTest --rerun-tasks --no-parallel
+CI=true ./gradlew test integrationTest --rerun-tasks --no-parallel
 ```
 
 ## Run
