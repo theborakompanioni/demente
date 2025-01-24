@@ -11,16 +11,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.tbk.nostr.base.EventId;
 import org.tbk.nostr.base.IndexedTag;
 import org.tbk.nostr.base.Kind;
-import org.tbk.nostr.base.Metadata;
+import org.tbk.nostr.base.SubscriptionId;
 import org.tbk.nostr.identity.Signer;
 import org.tbk.nostr.identity.SimpleSigner;
 import org.tbk.nostr.nips.Nip1;
 import org.tbk.nostr.nips.Nip13;
+import org.tbk.nostr.nips.Nip42;
 import org.tbk.nostr.proto.*;
 import org.tbk.nostr.relay.config.NostrRelayProperties;
 import org.tbk.nostr.template.NostrTemplate;
 import org.tbk.nostr.util.MoreEvents;
-import org.tbk.nostr.util.MoreKinds;
 import org.tbk.nostr.util.MoreSubscriptionIds;
 import org.tbk.nostr.util.MoreTags;
 
@@ -60,6 +60,26 @@ class NostrRelaySpecTest {
     }
 
     @Test
+    void itShouldPublishSimpleEventSuccessfully1WithPTags() {
+        Signer signer = SimpleSigner.random();
+
+        TagValue p0 = MoreTags.p(signer.getPublicKey());
+        TagValue p1EmptyRelayUri = MoreTags.named(IndexedTag.p.name(), signer.getPublicKey().value.toHex(), "");
+        TagValue p2 = MoreTags.p(signer.getPublicKey(), nostrTemplate.getRelayUri());
+
+        Event event = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM")
+                .addAllTags(List.of(p0, p1EmptyRelayUri, p2)));
+
+        OkResponse ok = nostrTemplate.send(event)
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(ok.getEventId(), is(event.getId()));
+        assertThat(ok.getSuccess(), is(true));
+        assertThat(ok.getMessage(), is(""));
+    }
+
+    @Test
     void itShouldNotifyOnDuplicateEvent() {
         Signer signer = SimpleSigner.random();
 
@@ -79,7 +99,7 @@ class NostrRelaySpecTest {
 
         assertThat(ok1.getEventId(), is(event.getId()));
         assertThat(ok1.getSuccess(), is(false));
-        assertThat(ok1.getMessage(), is("error: Duplicate event."));
+        assertThat(ok1.getMessage(), is("duplicate: Already have this event."));
     }
 
     @Test
@@ -173,7 +193,7 @@ class NostrRelaySpecTest {
     }
 
     @Test
-    void itShouldNotifyOnInvalidEvent3InvalidETag() {
+    void itShouldNotifyOnInvalidEvent4InvalidETag() {
         Signer signer = SimpleSigner.random();
 
         Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM0")
@@ -201,7 +221,30 @@ class NostrRelaySpecTest {
     }
 
     @Test
-    void itShouldNotifyOnInvalidEvent4InvalidPTag() {
+    void itShouldNotifyOnInvalidEvent4InvalidETagRelayUri() {
+        Signer signer = SimpleSigner.random();
+
+        Event event = MoreEvents.createFinalizedTextNote(signer, "GM");
+
+        Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM0")
+                .addTags(MoreTags.e(EventId.of(event).toHex(), "https://example.org")));
+
+        List<Event> events = List.of(invalidEvent0);
+        List<OkResponse> oks = nostrTemplate.send(events)
+                .collectList()
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(oks, hasSize(events.size()));
+
+        for (OkResponse ok : oks) {
+            assertThat(ok.getSuccess(), is(false));
+            assertThat(ok.getMessage(), is("invalid: Invalid tag 'e'."));
+        }
+    }
+
+    @Test
+    void itShouldNotifyOnInvalidEvent5InvalidPTag() {
         Signer signer = SimpleSigner.random();
 
         Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM0")
@@ -231,7 +274,28 @@ class NostrRelaySpecTest {
     }
 
     @Test
-    void itShouldNotifyOnInvalidEvent5InvalidATag() {
+    void itShouldNotifyOnInvalidEvent5InvalidPTagRelayUri() {
+        Signer signer = SimpleSigner.random();
+
+        Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM0")
+                .addTags(MoreTags.p(signer.getPublicKey().value.toHex(), "https://example.org")));
+
+        List<Event> events = List.of(invalidEvent0);
+        List<OkResponse> oks = nostrTemplate.send(events)
+                .collectList()
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(oks, hasSize(events.size()));
+
+        for (OkResponse ok : oks) {
+            assertThat(ok.getSuccess(), is(false));
+            assertThat(ok.getMessage(), is("invalid: Invalid tag 'p'."));
+        }
+    }
+
+    @Test
+    void itShouldNotifyOnInvalidEvent6InvalidATag() {
         Signer signer = SimpleSigner.random();
 
         Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM0")
@@ -278,17 +342,68 @@ class NostrRelaySpecTest {
     }
 
     @Test
-    void itShouldNotifyOnInvalidEvent6InvalidTagName() {
+    void itShouldNotifyOnInvalidEvent6InvalidATagRelayUri() {
         Signer signer = SimpleSigner.random();
 
         Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM0")
-                .addTags(MoreTags.named("")));
+                .addTags(MoreTags.a("%d:%s:%s".formatted(1, signer.getPublicKey().value.toHex(), ""), "https://example.org")));
+
+        List<Event> events = List.of(invalidEvent0);
+        List<OkResponse> oks = nostrTemplate.send(events)
+                .collectList()
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(oks, hasSize(events.size()));
+
+        for (OkResponse ok : oks) {
+            assertThat(ok.getSuccess(), is(false));
+            assertThat(ok.getMessage(), is("invalid: Invalid tag 'a'."));
+        }
+    }
+
+    @Test
+    void itShouldNotifyOnInvalidEvent7InvalidKTag() {
+        Signer signer = SimpleSigner.random();
+
+        Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM0")
+                .addTags(MoreTags.k(Kind.minValue() - 1)));
         Event invalidEvent1 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM1")
-                .addTags(MoreTags.named("", "test")));
+                .addTags(MoreTags.k(Kind.maxValue() + 1)));
         Event invalidEvent2 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM2")
+                .addTags(MoreTags.named(IndexedTag.k.name(), "")));
+        Event invalidEvent3 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM3")
+                .addTags(MoreTags.named(IndexedTag.k.name(), "invalid")));
+        ;
+
+        List<Event> events = List.of(invalidEvent0, invalidEvent1, invalidEvent2, invalidEvent3);
+        List<OkResponse> oks = nostrTemplate.send(events)
+                .collectList()
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(oks, hasSize(events.size()));
+
+        for (OkResponse ok : oks) {
+            assertThat(ok.getSuccess(), is(false));
+            assertThat(ok.getMessage(), is("invalid: Invalid tag 'k'."));
+        }
+    }
+
+    @Test
+    void itShouldNotifyOnInvalidEvent8InvalidTagName() {
+        Signer signer = SimpleSigner.random();
+
+        Event invalidEvent0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM0")
+                .addTags(TagValue.newBuilder().build()));
+        Event invalidEvent1 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM1")
+                .addTags(MoreTags.named("")));
+        Event invalidEvent2 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM2")
+                .addTags(MoreTags.named("", "test")));
+        Event invalidEvent3 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM3")
                 .addTags(MoreTags.named("0".repeat(257))));
 
-        List<Event> events = List.of(invalidEvent0, invalidEvent1, invalidEvent2);
+        List<Event> events = List.of(invalidEvent0, invalidEvent1, invalidEvent2, invalidEvent3);
         List<OkResponse> oks = nostrTemplate.send(events)
                 .collectList()
                 .blockOptional(Duration.ofSeconds(5))
@@ -303,7 +418,7 @@ class NostrRelaySpecTest {
     }
 
     @Test
-    void itShouldNotifyOnInvalidEvent7CreatedAtLessThanLowerLimit() {
+    void itShouldNotifyOnInvalidEvent9CreatedAtLessThanLowerLimit() {
         assertThat("sanity check", relayProperties.getCreatedAtLowerLimit(), is(notNullValue()));
 
         Signer signer = SimpleSigner.random();
@@ -324,7 +439,7 @@ class NostrRelaySpecTest {
     }
 
     @Test
-    void itShouldNotifyOnInvalidEvent8CreatedAtGreaterThanUpperLimit() {
+    void itShouldNotifyOnInvalidEvent10CreatedAtGreaterThanUpperLimit() {
         assertThat("sanity check", relayProperties.getCreatedAtUpperLimit(), is(notNullValue()));
 
         Signer signer = SimpleSigner.random();
@@ -358,7 +473,7 @@ class NostrRelaySpecTest {
                 .orElseThrow();
         assertThat(oks.stream().filter(OkResponse::getSuccess).count(), is((long) events.size()));
 
-        Event fetchedEvent0 = nostrTemplate.fetchEventById(EventId.of(eventMatching.getId().toByteArray()))
+        Event fetchedEvent0 = nostrTemplate.fetchEventById(EventId.of(eventMatching))
                 .blockOptional(Duration.ofSeconds(5))
                 .orElseThrow();
         assertThat(fetchedEvent0, is(eventMatching));
@@ -387,7 +502,7 @@ class NostrRelaySpecTest {
         assertThat(ok0.getEventId(), is(event0.getId()));
         assertThat(ok0.getSuccess(), is(true));
 
-        Event fetchedEvent0 = nostrTemplate.fetchEventById(EventId.of(event0.getId().toByteArray()))
+        Event fetchedEvent0 = nostrTemplate.fetchEventById(EventId.of(event0))
                 .blockOptional(Duration.ofSeconds(5))
                 .orElseThrow();
         assertThat(fetchedEvent0, is(event0));
@@ -455,16 +570,17 @@ class NostrRelaySpecTest {
     void itShouldFetchEventsByKindSuccessfully0() {
         Signer signer = SimpleSigner.random();
 
-        int kind = 1337;
+        int kind0 = Kind.maxValue() - 1;
+        int kind1 = Kind.maxValue();
 
         Event eventMatching = MoreEvents.finalize(signer, MoreEvents.withEventId(Event.newBuilder()
                 .setCreatedAt(Instant.now().getEpochSecond())
                 .setPubkey(ByteString.fromHex(signer.getPublicKey().value.toHex()))
-                .setKind(kind)
+                .setKind(kind0)
                 .setContent("GM")));
 
         Event eventNonMatching = MoreEvents.finalize(signer, MoreEvents.withEventId(eventMatching.toBuilder()
-                .setKind(eventMatching.getKind() + 1)));
+                .setKind(kind1)));
 
         List<Event> events = List.of(eventMatching, eventNonMatching);
         List<OkResponse> oks = nostrTemplate.send(events)
@@ -479,7 +595,7 @@ class NostrRelaySpecTest {
                                 .addAllIds(events.stream()
                                         .map(Event::getId)
                                         .toList())
-                                .addKinds(kind)
+                                .addKinds(kind0)
                                 .build())
                         .build())
                 .collectList()
@@ -696,7 +812,7 @@ class NostrRelaySpecTest {
         assertThat(ok0.getSuccess(), is(true));
         assertThat(ok0.getMessage(), is(""));
 
-        Optional<Event> fetchedEvent0 = nostrTemplate.fetchEventById(EventId.of(ephemeralEvent0.getId().toByteArray()))
+        Optional<Event> fetchedEvent0 = nostrTemplate.fetchEventById(EventId.of(ephemeralEvent0))
                 .blockOptional(Duration.ofSeconds(5));
 
         assertThat(fetchedEvent0.isPresent(), is(false));
@@ -706,10 +822,10 @@ class NostrRelaySpecTest {
     void itShouldVerifyReplaceableEventBehaviour0() {
         Signer signer = SimpleSigner.random();
 
-        Metadata metadata0 = Metadata.newBuilder()
-                .name("name")
-                .about("about")
-                .picture(URI.create("https://www.example.com/example.png"))
+        ProfileMetadata metadata0 = ProfileMetadata.newBuilder()
+                .setName("name")
+                .setAbout("about")
+                .setPicture(URI.create("https://www.example.com/example.png").toString())
                 .build();
 
         Event event0 = MoreEvents.createFinalizedMetadata(signer, metadata0);
@@ -751,10 +867,10 @@ class NostrRelaySpecTest {
     void itShouldVerifyReplaceableEventBehaviour1NewerEventsExist() {
         Signer signer = SimpleSigner.random();
 
-        Metadata metadata = Metadata.newBuilder()
-                .name("name")
-                .about("about")
-                .picture(URI.create("https://www.example.com/example.png"))
+        ProfileMetadata metadata = ProfileMetadata.newBuilder()
+                .setName("name")
+                .setAbout("about")
+                .setPicture(URI.create("https://www.example.com/example.png").toString())
                 .build();
 
         Event event0 = MoreEvents.createFinalizedMetadata(signer, metadata);
@@ -798,10 +914,10 @@ class NostrRelaySpecTest {
     void itShouldVerifyReplaceableEventBehaviour2LowerIdWithSameCreatedAtTimestampCanBeInserted() {
         Signer signer = SimpleSigner.random();
 
-        Metadata metadata = Metadata.newBuilder()
-                .name("name")
-                .about("about")
-                .picture(URI.create("https://www.example.com/example.png"))
+        ProfileMetadata metadata = ProfileMetadata.newBuilder()
+                .setName("name")
+                .setAbout("about")
+                .setPicture(URI.create("https://www.example.com/example.png").toString())
                 .build();
 
         Event event1WithLowerId = MoreEvents.finalize(signer, Nip13.mineEvent(Nip1.createMetadata(signer.getPublicKey(), metadata), 16));
@@ -810,7 +926,7 @@ class NostrRelaySpecTest {
 
         assertThat("sanity check", event1WithLowerId.getCreatedAt(), is(event0.getCreatedAt()));
         // this check might fail - unlikely, but can happen!
-        assertThat("sanity check", EventId.of(event1WithLowerId.getId().toByteArray()), is(lessThan(EventId.of(event0.getId().toByteArray()))));
+        assertThat("sanity check", EventId.of(event1WithLowerId), is(lessThan(EventId.of(event0))));
 
         OkResponse ok0 = nostrTemplate.send(event0)
                 .blockOptional(Duration.ofSeconds(5))
@@ -843,10 +959,10 @@ class NostrRelaySpecTest {
     void itShouldVerifyReplaceableEventBehaviour3GreaterIdWithSameCreatedAtTimestampCanNotBeInserted() {
         Signer signer = SimpleSigner.random();
 
-        Metadata metadata = Metadata.newBuilder()
-                .name("name")
-                .about("about")
-                .picture(URI.create("https://www.example.com/example.png"))
+        ProfileMetadata metadata = ProfileMetadata.newBuilder()
+                .setName("name")
+                .setAbout("about")
+                .setPicture(URI.create("https://www.example.com/example.png").toString())
                 .build();
 
         Event event0WithLowerId = MoreEvents.finalize(signer, Nip13.mineEvent(Nip1.createMetadata(signer.getPublicKey(), metadata), 16));
@@ -855,7 +971,7 @@ class NostrRelaySpecTest {
 
         assertThat("sanity check", event0WithLowerId.getCreatedAt(), is(event1.getCreatedAt()));
         // this check might fail - unlikely, but can happen!
-        assertThat("sanity check", EventId.of(event0WithLowerId.getId().toByteArray()), is(lessThan(EventId.of(event1.getId().toByteArray()))));
+        assertThat("sanity check", EventId.of(event0WithLowerId), is(lessThan(EventId.of(event1))));
 
         OkResponse ok0 = nostrTemplate.send(event0WithLowerId)
                 .blockOptional(Duration.ofSeconds(5))
@@ -1048,20 +1164,26 @@ class NostrRelaySpecTest {
     }
 
     @Test
-    @Disabled("NostrTemplate should have a method to send plain json")
     void itShouldVerifyAddressableEventBehaviour4NullFirstValueOfDTag() {
-        Signer signer = SimpleSigner.random();
-
-        Event prototype = MoreEvents.finalize(signer, Nip1.createAddressableEvent(signer.getPublicKey(), "GM", "test"));
-        /*
-        // TODO: must serialize as json and send plain
-        OkResponse ok0 = nostrTemplate.send("TODO.. plain json here.. send a `d` tag like `["d", null, "value"]`")
+        Response response = nostrTemplate.publishPlainMono("""
+                        [
+                          "EVENT",
+                          {
+                            "id": "0cd5d30f035482835ffaeb8bb6ac0b77f0d3cafd310f2067323027715ed61f6f",
+                            "pubkey":"34bed500d9662b4203ceb59609badab4af9b0b8043625372cc797e099db8b1be",
+                            "created_at":1714086553,
+                            "kind":30000,
+                            "tags":[["d", null, "test"]],
+                            "content":"GM",
+                            "sig":"54e3047e7c4d9c7567808edfc55f23ae0f0bca908fa29da22b9e307e67a1762918a48a9a3d83c8915be54701b1d343b3ddb99cde8860c199330bd9a5c0ff2fb4"
+                          }
+                        ]
+                        """)
                 .blockOptional(Duration.ofSeconds(5))
                 .orElseThrow();
 
-        assertThat(ok0.getSuccess(), is(false));
-        assertThat(ok0.getMessage(), is("TODO.. what error message?"));
-         */
+        assertThat(response.getKindCase(), is(Response.KindCase.NOTICE));
+        assertThat(response.getNotice().getMessage(), is("Error while parsing message: Element at index 0 is null."));
     }
 
     @Test
@@ -1097,5 +1219,158 @@ class NostrRelaySpecTest {
                 .blockOptional(Duration.ofSeconds(5));
 
         assertThat("COUNT is not supported", countBefore.isEmpty());
+    }
+
+    @Test
+    void itShouldDeclineInvalidMessage0() {
+        Response response = nostrTemplate.publishPlainMono("")
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(response.getKindCase(), is(Response.KindCase.NOTICE));
+        assertThat(response.getNotice().getMessage(), startsWith("""
+                Error while parsing message: com.fasterxml.jackson.jr.ob.JSONObjectException: No content to map due to end-of-input
+                """.replace("\n", "")));
+    }
+
+    @Test
+    void itShouldDeclineInvalidMessage1() {
+        Response response = nostrTemplate.publishPlainMono("null")
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(response.getKindCase(), is(Response.KindCase.NOTICE));
+        assertThat(response.getNotice().getMessage(), is("Error while parsing message: Cannot read the array length because \"array\" is null"));
+    }
+
+    @Test
+    void itShouldDeclineInvalidMessage2() {
+        Response response = nostrTemplate.publishPlainMono("[]")
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(response.getKindCase(), is(Response.KindCase.NOTICE));
+        assertThat(response.getNotice().getMessage(), is("Error while parsing message: Could not parse passed arg"));
+    }
+
+    @Test
+    void itShouldDeclineInvalidMessage3() {
+        Response response = nostrTemplate.publishPlainMono("GM")
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(response.getKindCase(), is(Response.KindCase.NOTICE));
+        assertThat(response.getNotice().getMessage(), startsWith("""
+                Error while parsing message: com.fasterxml.jackson.jr.private_.JsonParseException: Unrecognized token 'GM': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+                """.replace("\n", "")));
+    }
+
+    @Test
+    void itShouldDeclineInvalidMessage4EmptyEvent() {
+        Response response = nostrTemplate.publishPlainMono("""
+                        [
+                          "EVENT",
+                          {}
+                        ]
+                        """)
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(response.getKindCase(), is(Response.KindCase.NOTICE));
+        assertThat(response.getNotice().getMessage(), is("Error while parsing message: Missing property 'id'"));
+    }
+
+    @Test
+    void itShouldDeclineInvalidMessage5UnknownProtoKind() {
+        Response response = nostrTemplate.publishPlainMono("""
+                        [
+                          "NOTICE",
+                          "GM"
+                        ]
+                        """)
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(response.getKindCase(), is(Response.KindCase.NOTICE));
+        assertThat(response.getNotice().getMessage(), is("Error while parsing message: No enum constant org.tbk.nostr.proto.Request.KindCase.NOTICE"));
+    }
+
+    @Test
+    void itShouldDeclineInvalidMessage6ProtoKindNotSet() {
+        Response response = nostrTemplate.publishPlainMono("""
+                        [
+                          "KIND_NOT_SET",
+                          {}
+                        ]
+                        """)
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(response.getKindCase(), is(Response.KindCase.NOTICE));
+        assertThat(response.getNotice().getMessage(), is("Error while parsing message: Kind not set"));
+    }
+
+    /**
+     * What to do on unknown subscriptions?
+     * Current implementation takes a client friendly approach and just signals it removed it successfully by sending
+     * a "CLOSED" message.
+     */
+    @Test
+    void itShouldSendClosedMessageForUnknownSubscriptions() {
+        SubscriptionId subscriptionId = MoreSubscriptionIds.random();
+        Response response = nostrTemplate.publishPlainMono("""
+                        [
+                          "CLOSE",
+                          "%s"
+                        ]
+                        """.formatted(subscriptionId.getId()))
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(response.getKindCase(), is(Response.KindCase.CLOSED));
+        assertThat(response.getClosed().getSubscriptionId(), is(subscriptionId.getId()));
+        assertThat(response.getClosed().getMessage(), is(""));
+    }
+
+
+    @Test
+    void itShouldVerifyErrorResponseIfAuthIsNotSupported() {
+        Signer signer = SimpleSigner.random();
+
+        Event authEvent = MoreEvents.finalize(signer, Nip42.createAuthEvent(signer.getPublicKey(),
+                "challengestringhere",
+                nostrTemplate.getRelayUri()));
+
+        OkResponse response = nostrTemplate.auth(authEvent)
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(response.getEventId(), is(authEvent.getId()));
+        assertThat(response.getSuccess(), is(false));
+        assertThat(response.getMessage(), is("error: AUTH is not supported."));
+    }
+
+    @Test
+    void itShouldVerifyErrorResponseIfCountIsNotSupported() {
+        Signer signer = SimpleSigner.random();
+
+        String subscriptionId = MoreSubscriptionIds.random().getId();
+        Response response = nostrTemplate.publish(Request.newBuilder()
+                        .setCount(CountRequest.newBuilder()
+                                .setId(subscriptionId)
+                                .addFilters(Filter.newBuilder()
+                                        .addAuthors(ByteString.fromHex(signer.getPublicKey().value.toHex()))
+                                        .build())
+                                .build()).build())
+                .next()
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(response.getKindCase(), is(Response.KindCase.CLOSED));
+
+        ClosedResponse closed = response.getClosed();
+
+        assertThat(closed.getSubscriptionId(), is(subscriptionId));
+        assertThat(closed.getMessage(), is("error: COUNT is not supported."));
     }
 }

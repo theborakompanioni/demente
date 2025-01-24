@@ -41,7 +41,7 @@ class NostrRelayNip40Test {
         Event event0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM")
                 .addTags(MoreTags.expiration(expiresAt)));
 
-        assertThat("sanity check", Nip40.getExpiration(event0), is(Optional.of(expiresAt.truncatedTo(ChronoUnit.SECONDS))));
+        assertThat("sanity check", Nip40.findExpiration(event0).orElseThrow().instant(), is(expiresAt.truncatedTo(ChronoUnit.SECONDS)));
 
         OkResponse ok0 = nostrTemplate.send(event0)
                 .blockOptional(Duration.ofSeconds(5))
@@ -49,7 +49,7 @@ class NostrRelayNip40Test {
         assertThat(ok0.getEventId(), is(event0.getId()));
         assertThat(ok0.getSuccess(), is(true));
 
-        Optional<Event> refetchedEvent0 = nostrTemplate.fetchEventById(EventId.of(event0.getId().toByteArray()))
+        Optional<Event> refetchedEvent0 = nostrTemplate.fetchEventById(EventId.of(event0))
                 .blockOptional(Duration.ofSeconds(5));
         assertThat(refetchedEvent0.isPresent(), is(false));
     }
@@ -65,7 +65,7 @@ class NostrRelayNip40Test {
         Event event0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM")
                 .addTags(MoreTags.expiration(expiresAt)));
 
-        assertThat("sanity check", Nip40.getExpiration(event0), is(Optional.of(expiresAt.truncatedTo(ChronoUnit.SECONDS))));
+        assertThat("sanity check", Nip40.findExpiration(event0).orElseThrow().instant(), is(expiresAt.truncatedTo(ChronoUnit.SECONDS)));
 
         OkResponse ok0 = nostrTemplate.send(event0)
                 .blockOptional(Duration.ofSeconds(5))
@@ -73,7 +73,7 @@ class NostrRelayNip40Test {
         assertThat(ok0.getEventId(), is(event0.getId()));
         assertThat(ok0.getSuccess(), is(true));
 
-        EventId event0Id = EventId.of(event0.getId().toByteArray());
+        EventId event0Id = EventId.of(event0);
         Event fetchedEvent0 = nostrTemplate.fetchEventById(event0Id)
                 .blockOptional(Duration.ofSeconds(5))
                 .orElseThrow();

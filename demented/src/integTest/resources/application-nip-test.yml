@@ -12,3 +12,4 @@ org.tbk.nostr.nip11:
     supported-nips: [1, 42, 21000000]
     software: https://github.com/theborakompanioni/nostr-spring-boot-starter
     version: 0.2.1-beta
+    icon: https://example.org/favicon.ico

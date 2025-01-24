@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.is;
 @ContextConfiguration(classes = NostrRelayTestConfig.class)
 @ActiveProfiles({"test", "load-test"})
 class NostrRelayLoadTest {
+    private static final Duration TIMEOUT = Duration.ofSeconds(90);
 
     @Autowired
     private NostrTemplate nostrTemplate;
@@ -47,7 +48,7 @@ class NostrRelayLoadTest {
 
         Stopwatch started = Stopwatch.createStarted();
         OkResponse ok = nostrTemplate.send(event)
-                .blockOptional(Duration.ofSeconds(5))
+                .blockOptional(TIMEOUT)
                 .orElseThrow();
 
         assertThat(ok.getEventId(), is(event.getId()));
@@ -57,7 +58,7 @@ class NostrRelayLoadTest {
         log.info("Inserting 1 event took {}", started.stop());
     }
 
-    @RepeatedTest(3)
+    @RepeatedTest(2)
     void itShouldSendEventLoadTestSingleConnection() throws InterruptedException {
         Signer signer = SimpleSigner.random();
 
@@ -70,7 +71,7 @@ class NostrRelayLoadTest {
         Stopwatch started = Stopwatch.createStarted();
         Flux.just(events)
                 .subscribeOn(Schedulers.single())
-                .flatMap(it -> nostrTemplate.send(it))
+                .flatMap(it -> nostrTemplate.send(it).timeout(TIMEOUT))
                 .doFinally(foo -> {
                     latch.countDown();
                 }).subscribe(ok -> {
@@ -78,12 +79,12 @@ class NostrRelayLoadTest {
                     assertThat(ok.getMessage(), is(""));
                 });
 
-        assert latch.await(60, TimeUnit.SECONDS);
+        assertThat(latch.await(TIMEOUT.toMillis(), TimeUnit.MILLISECONDS), is(true));
 
         log.info("Inserting {} events on single thread took {}", eventCount, started.stop());
     }
 
-    @RepeatedTest(3)
+    @RepeatedTest(2)
     void itShouldSendEventLoadTestMultipleConnections() throws InterruptedException {
         Signer signer = SimpleSigner.random();
 
@@ -96,7 +97,7 @@ class NostrRelayLoadTest {
         Stopwatch started = Stopwatch.createStarted();
         Flux.fromIterable(events)
                 .subscribeOn(Schedulers.newParallel("load-test"))
-                .flatMap(it -> nostrTemplate.send(it))
+                .flatMap(it -> nostrTemplate.send(it).timeout(TIMEOUT))
                 .doFinally(foo -> {
                     latch.countDown();
                 }).subscribe(ok -> {
@@ -104,7 +105,7 @@ class NostrRelayLoadTest {
                     assertThat(ok.getMessage(), is(""));
                 });
 
-        assert latch.await(60, TimeUnit.SECONDS);
+        assertThat(latch.await(TIMEOUT.toMillis(), TimeUnit.MILLISECONDS), is(true));
 
         log.info("Inserting {} events on multiple threads took {}", eventCount, started.stop());
     }

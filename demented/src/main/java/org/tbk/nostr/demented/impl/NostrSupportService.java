@@ -63,26 +63,26 @@ public class NostrSupportService implements NostrSupport, Nip1Support, Nip9Suppo
 
     private static OkResponse.Builder handleEventMessageException(Exception e, OkResponse.Builder okBuilder) {
         if (e instanceof UncategorizedDataAccessException udae) {
-            okBuilder.setMessage("error: %s".formatted("Undefined storage error."));
-
             Throwable mostSpecificCause = udae.getMostSpecificCause();
             if (mostSpecificCause instanceof SQLiteException sqliteException) {
-                okBuilder.setMessage("error: %s".formatted("Storage error (%d).".formatted(sqliteException.getResultCode().code)));
                 switch (sqliteException.getResultCode()) {
                     case SQLITE_CONSTRAINT_UNIQUE, SQLITE_CONSTRAINT_PRIMARYKEY ->
-                            okBuilder.setMessage("error: %s".formatted("Duplicate event."));
+                            okBuilder.setMessage("duplicate: Already have this event.");
                     case SQLITE_CONSTRAINT_CHECK -> okBuilder.setMessage("error: %s".formatted("Check failed."));
+                    default ->
+                            okBuilder.setMessage("error: %s".formatted("Storage error (%d).".formatted(sqliteException.getResultCode().code)));
                 }
+            } else {
+                okBuilder.setMessage("error: %s".formatted("Undefined storage error."));
             }
         } else if (e instanceof DataIntegrityViolationException) {
-            okBuilder.setMessage("error: %s".formatted("Duplicate event."));
+            okBuilder.setMessage("duplicate: Already have this event.");
         } else {
             okBuilder.setMessage("error: %s".formatted("Unknown reason."));
         }
 
         return okBuilder;
     }
-
 
     @Override
     public Flux<Event> findAll(Collection<Filter> filters) {
@@ -151,12 +151,9 @@ public class NostrSupportService implements NostrSupport, Nip1Support, Nip9Suppo
 
     @Override
     public Mono<Boolean> hasDeletionEvent(XonlyPublicKey author, Event event) {
-        return Mono.fromCallable(() -> {
-            EventId eventId = EventId.of(event.getId().toByteArray());
-            return eventEntityService.exists(EventEntitySpecifications.hasPubkey(author)
-                    .and(EventEntitySpecifications.hasKind(Kinds.kindDeletion))
-                    .and(EventEntitySpecifications.hasTagWithFirstValue(IndexedTag.e, eventId.toHex())));
-        });
+        return Mono.fromCallable(() -> eventEntityService.exists(EventEntitySpecifications.hasPubkey(author)
+                .and(EventEntitySpecifications.hasKind(Kinds.kindDeletion))
+                .and(EventEntitySpecifications.hasTagWithFirstValue(IndexedTag.e, EventId.of(event).toHex()))));
     }
 
     @NonNull

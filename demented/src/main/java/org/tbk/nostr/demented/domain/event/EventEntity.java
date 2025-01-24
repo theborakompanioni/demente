@@ -120,7 +120,7 @@ public class EventEntity extends AbstractAggregateRoot<EventEntity> implements A
     @Value(staticConstructor = "of")
     public static class EventEntityId implements Identifier {
         static EventEntityId create(Event event) {
-            return EventEntityId.of(HexFormat.of().formatHex(event.getId().toByteArray()));
+            return EventEntityId.of(EventId.of(event.getId()).toHex());
         }
 
         @NonNull

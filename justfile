@@ -41,6 +41,15 @@ build:
 dependencies:
     @./gradlew dependencyTree
 
+# run unit tests
+[group("development")]
+test:
+    @./gradlew test
+
+# run integration tests
+[group("development")]
+test-integration:
+    @./gradlew integrationTest --rerun-tasks --no-parallel
 
 # package the app to create an uber jar
 [group("development")]
@@ -69,16 +78,6 @@ start-jar:
     fi
     declare -r JVM_ARGS="-XX:+UseZGC -XX:+ZGenerational"
     java $JVM_ARGS -jar "$APP_JAR" -Dspring.profiles.active=development
-
-# run unit tests
-[group("development")]
-test:
-    @./gradlew test
-
-# run integration tests
-[group("development")]
-integrationTest:
-    @./gradlew integrationTest --rerun-tasks --no-parallel
 
 # create a docker image (requires Docker)
 [group("docker")]
