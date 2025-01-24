@@ -1,6 +1,5 @@
 package org.tbk.nostr.demented;
 
-import fr.acinq.bitcoin.PrivateKey;
 import fr.acinq.bitcoin.XonlyPublicKey;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
