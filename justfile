@@ -83,7 +83,7 @@ start-jar:
 [group("docker")]
 docker-build:
     @echo "Creating a docker image ..."
-    @docker buildx build -t "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_TAG" .
+    @docker buildx build -t "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_VERSION" .
 
 # size of the docker image
 [group("docker")]
@@ -94,13 +94,13 @@ docker-image-size:
 [group("docker")]
 docker-run:
     @echo "Running container from docker image ..."
-    @docker run --publish "$APP_PORT:$APP_PORT" "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_TAG"
+    @docker run --publish "$APP_PORT:$APP_PORT" "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_VERSION"
 
 # run the docker image and start shell
 [group("docker")]
 docker-run-shell:
     @echo "Running container from docker image with shell..."
-    @docker run --rm --entrypoint="/bin/bash" -it "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_TAG"
+    @docker run --rm --entrypoint="/bin/bash" -it "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_VERSION"
 
 # run the docker compose devel setup
 [group("docker")]
