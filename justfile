@@ -100,3 +100,8 @@ docker-run:
 [group("docker")]
 docker-compose-up-devel:
     @docker compose -f docker-compose-devel.yml up --build
+
+# stop the docker compose devel setup
+[group("docker")]
+docker-compose-down-devel:
+    @docker compose -f docker-compose-devel.yml down --volumes
