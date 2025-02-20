@@ -81,7 +81,7 @@ start-jar:
 
 # create a docker image (requires Docker)
 [group("docker")]
-docker-image-create:
+docker-build:
     @echo "Creating a docker image ..."
     @docker buildx build -t "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_TAG" .
 
@@ -92,9 +92,9 @@ docker-image-size:
 
 # run the docker image (requires Docker)
 [group("docker")]
-docker-image-run:
+docker-run:
     @echo "Running container from docker image ..."
-    @docker run -p "$APP_PORT:$APP_PORT" "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_TAG"
+    @docker run --publish "$APP_PORT:$APP_PORT" "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_TAG"
 
 # run the docker compose devel setup (requires Docker)
 [group("docker")]
