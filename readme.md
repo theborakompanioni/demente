@@ -1,3 +1,5 @@
+[![Build](https://github.com/theborakompanioni/demente/actions/workflows/build.yml/badge.svg)](https://github.com/theborakompanioni/demente/actions/workflows/build.yml)
+[![GitHub Release](https://img.shields.io/github/release/theborakompanioni/demente.svg?maxAge=3600)](https://github.com/theborakompanioni/demente/releases/latest)
 [![License](https://img.shields.io/github/license/theborakompanioni/demente.svg?maxAge=2592000)](https://github.com/theborakompanioni/demente/blob/master/LICENSE)
 
 demente
