@@ -79,24 +79,30 @@ start-jar:
     declare -r JVM_ARGS="-XX:+UseZGC -XX:+ZGenerational"
     java $JVM_ARGS -jar "$APP_JAR" -Dspring.profiles.active=development
 
-# create a docker image (requires Docker)
+# create a docker image
 [group("docker")]
 docker-build:
     @echo "Creating a docker image ..."
     @docker buildx build -t "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_TAG" .
 
-# size of the docker image (requires Docker)
+# size of the docker image
 [group("docker")]
 docker-image-size:
     @docker images "$DOCKER_IMAGE_NAME"
 
-# run the docker image (requires Docker)
+# run the docker image
 [group("docker")]
 docker-run:
     @echo "Running container from docker image ..."
     @docker run --publish "$APP_PORT:$APP_PORT" "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_TAG"
 
-# run the docker compose devel setup (requires Docker)
+# run the docker image and start shell
+[group("docker")]
+docker-run-shell:
+    @echo "Running container from docker image with shell..."
+    @docker run --rm --entrypoint="/bin/bash" -it "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_TAG"
+
+# run the docker compose devel setup
 [group("docker")]
 docker-compose-up-devel:
     @docker compose -f docker-compose-devel.yml up --build

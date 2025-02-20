@@ -48,14 +48,24 @@ curl -H "Accept: application/nostr+json" http://localhost:8080 | jq
 ```
 
 ### Docker
-After you have built the application run:
+
 ```shell
+just clean package docker-compose-up-devel
+# or
 ./gradlew clean bootJar && docker compose -f docker-compose-devel.yml up --build
 ```
 
 ```shell
+just docker-build
+# or
 docker build -t theborakompanioni/demented .
 docker run -p 8080:8080 --name demented theborakompanioni/demented
+```
+
+```shell
+just docker-run-shell
+# or
+docker run --rm --entrypoint="/bin/bash" -it theborakompanioni/demented
 ```
 
 ## Contributing
