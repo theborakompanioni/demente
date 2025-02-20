@@ -1,0 +1,51 @@
+
+name: Build Docker image
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - devel
+
+env:
+  TEST_TAG: test
+
+jobs:
+  readenv:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      docker_image_name: ${{ steps.dotenv.outputs.docker_image_name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read .env file
+        id: dotenv
+        uses: falti/dotenv-action@v1.1.4
+        with:
+          log-variables: true
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: readenv
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        uses: docker/build-push-action@v6
+        env:
+          SOURCE_DATE_EPOCH: 0
+        with:
+          load: true
+          push: false
+          tags: ${{ needs.readenv.outputs.docker_image_name }}:${{ env.TEST_TAG }}
