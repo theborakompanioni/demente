@@ -2,11 +2,13 @@
 services:
   postgres:
     restart: always
-    container_name: "${COMPOSE_PROJECT_NAME}-db"
+    container_name: demented_db
     image: postgres:17.0-alpine3.20
     volumes:
       - postgres-data:/postgresql_data
       - ./data/pg/init:/docker-entrypoint-initdb.d/
+    labels:
+      org.springframework.boot.ignore: true
     environment:
       POSTGRES_ADDITIONAL_DATABASES: regtest_nostr_relay0
       POSTGRES_USER: postgres
@@ -21,5 +23,21 @@ services:
       timeout: 5s
       retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: demented_pgadmin
+    restart: unless-stopped
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: postgres@example.org
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    ports:
+      - "15532:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres-data:
+  pgadmin-data:
