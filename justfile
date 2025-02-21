@@ -51,6 +51,11 @@ test:
 test-integration:
     @./gradlew integrationTest --rerun-tasks --no-parallel
 
+# run all tests
+[group("development")]
+test-all:
+    @./gradlew test integrationTest --rerun-tasks --no-parallel
+
 # package the app to create an uber jar
 [group("development")]
 package:
