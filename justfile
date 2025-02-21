@@ -104,10 +104,10 @@ docker-run-shell:
 
 # run the docker compose devel setup
 [group("docker")]
-docker-compose-up-devel:
+docker-compose-devel-up:
     @docker compose -f docker-compose-devel.yml up --build
 
 # stop the docker compose devel setup
 [group("docker")]
-docker-compose-down-devel:
+docker-compose-devel-down:
     @docker compose -f docker-compose-devel.yml down --volumes

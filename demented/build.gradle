@@ -23,6 +23,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation "org.xerial:sqlite-jdbc:${sqliteVersion}"
+    implementation "org.postgresql:postgresql:${postgresqlVersion}"
     implementation "org.hibernate.orm:hibernate-community-dialects:${hibernateCommunityDialectsVersion}"
 
     implementation 'org.jmolecules:jmolecules-ddd'
@@ -43,6 +44,5 @@ dependencies {
 
     testImplementation "io.github.theborakompanioni:nostr-template:${nostrSpringBootStarterVersion}"
     testImplementation "io.github.theborakompanioni:nostr-client:${nostrSpringBootStarterVersion}"
-    integTestImplementation "org.postgresql:postgresql:${postgresqlVersion}"
     integTestImplementation 'org.springframework.boot:spring-boot-docker-compose'
 }
