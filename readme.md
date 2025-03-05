@@ -52,7 +52,7 @@ curl -H "Accept: application/nostr+json" http://localhost:8080 | jq
 ### Docker
 
 ```shell
-just clean package docker-compose-up-devel
+just clean package docker-compose-devel-up
 # or
 ./gradlew clean bootJar && docker compose -f docker-compose-devel.yml up --build
 ```
