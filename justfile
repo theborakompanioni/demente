@@ -88,7 +88,7 @@ start-jar:
 [group("docker")]
 docker-build:
     @echo "Creating a docker image ..."
-    @docker buildx build -t "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_VERSION" .
+    @docker buildx build --load --tag "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_VERSION" .
 
 # size of the docker image
 [group("docker")]
