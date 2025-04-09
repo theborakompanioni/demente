@@ -1,11 +1,10 @@
 services:
 
   app:
-    restart: no
-    container_name: demented_devel_app
     build:
       context: .
       dockerfile: ./devel.Dockerfile
+    restart: no
     depends_on:
       postgres:
         condition: service_healthy
@@ -25,9 +24,10 @@ services:
       --logging.level.web=INFO
 
   postgres:
-    restart: no
-    container_name: demented_devel_db
     image: postgres:17.3-alpine3.21@sha256:80d3d7d6bb3ddb1e44b79612330f7bfc6c451f093f6dd14a1317e777a260b602
+    restart: no
+    labels:
+      org.springframework.boot.ignore: true
     volumes:
       - postgres-data:/postgresql_data
       - ./docker/regtest/pg/data/pg/init:/docker-entrypoint-initdb.d/
