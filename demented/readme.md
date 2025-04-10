@@ -4,5 +4,5 @@ demented
 ## Run
 
 ```shell
-./gradlew -p demented bootRun --args="--server.port=7000 --debug"
+./gradlew --project-dir demented bootRun --args="--server.port=7000 --debug"
 ```
