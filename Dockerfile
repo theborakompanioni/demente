@@ -20,6 +20,14 @@ WORKDIR /home/app
 COPY --from=builder --chown=app:app /app/build/app.jar /home/app/app.jar
 COPY --from=healthcheck --chown=app:app HealthCheck.java /home/app/HealthCheck.java
 
+LABEL org.opencontainers.image.title=demented
+LABEL org.opencontainers.image.description="A powerful, enterprise-ready, open source nostr relay"
+LABEL org.opencontainers.image.url=https://github.com/theborakompanioni/demente
+LABEL org.opencontainers.image.documentation=https://github.com/theborakompanioni/demente
+LABEL org.opencontainers.image.vendor="theborakompanioni"
+LABEL org.opencontainers.image.licenses=Apache-2.0
+LABEL org.opencontainers.image.source="https://github.com/theborakompanioni/demente"
+
 ENTRYPOINT ["java", "-jar", "/home/app/app.jar"]
 
 HEALTHCHECK --interval=10s --timeout=5s --retries=20 CMD ["java", "/home/app/HealthCheck.java", "http://localhost:9001/actuator/health"]
