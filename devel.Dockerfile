@@ -3,7 +3,7 @@ FROM ghcr.io/theborakompanioni/java-healthcheck:master@sha256:fba2caf06a8b1f324d
 FROM azul/zulu-openjdk-alpine:21-jre-headless@sha256:c3312be85fb542362ac000df1112475dee65ad87021269a6a980f2c7fe9ea536
 
 ARG JAR_FILE=demented/build/libs/*-boot.jar
-COPY ${JAR_FILE} app.jar
+COPY ${JAR_FILE} /app.jar
 
 COPY --from=healthcheck HealthCheck.java /HealthCheck.java
 
