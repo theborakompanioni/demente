@@ -20,8 +20,8 @@ WORKDIR /home/app
 COPY --from=builder --chown=app:app /app/build/app.jar /home/app/app.jar
 COPY --from=healthcheck --chown=app:app HealthCheck.java /home/app/HealthCheck.java
 
-LABEL org.opencontainers.image.title=demented
-LABEL org.opencontainers.image.description="A powerful, enterprise-ready, open source nostr relay"
+LABEL org.opencontainers.image.title=demente
+LABEL org.opencontainers.image.description="A powerful, extensible, open source nostr relay"
 LABEL org.opencontainers.image.url=https://github.com/theborakompanioni/demente
 LABEL org.opencontainers.image.documentation=https://github.com/theborakompanioni/demente
 LABEL org.opencontainers.image.vendor="theborakompanioni"

@@ -67,7 +67,7 @@ docker run -p 8080:8080 --name demented theborakompanioni/demented
 ```shell
 just docker-run-shell
 # or
-docker run --rm --entrypoint="/bin/bash" -it theborakompanioni/demented
+docker run --rm --entrypoint="/bin/ash" -it theborakompanioni/demented
 ```
 
 ## Contributing

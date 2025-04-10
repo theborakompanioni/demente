@@ -105,7 +105,7 @@ docker-run:
 [group("docker")]
 docker-run-shell:
     @echo "Running container from docker image with shell..."
-    @docker run --rm --entrypoint="/bin/bash" -it "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_VERSION"
+    @docker run --rm --entrypoint="/bin/ash" -it "$DOCKER_IMAGE_NAME":"$DOCKER_IMAGE_VERSION"
 
 # run the docker compose devel setup
 [group("docker")]
