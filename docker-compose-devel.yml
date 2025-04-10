@@ -19,7 +19,7 @@ services:
       --spring.datasource.driver-class-name=org.postgresql.Driver
       --spring.datasource.hikari.pool-name=PostgresPool
       --spring.datasource.hikari.maximum-pool-size=10
-      --spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      --spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
       --spring.http.log-request-details=false
       --logging.level.web=INFO
 
