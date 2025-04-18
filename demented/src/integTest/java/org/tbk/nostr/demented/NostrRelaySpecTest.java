@@ -539,10 +539,11 @@ class NostrRelaySpecTest {
 
         Event eventMatching = MoreEvents.finalize(signer0, Nip1.createTextNote(signer0.getPublicKey(), "GM")
                 .addTags(MoreTags.p(signer0.getPublicKey())));
-        Event eventNonMatching = MoreEvents.finalize(signer1, Nip1.createTextNote(signer1.getPublicKey(), "GM")
+        Event eventNonMatching0 = MoreEvents.finalize(signer1, Nip1.createTextNote(signer1.getPublicKey(), "GM")
                 .addTags(MoreTags.p(signer1.getPublicKey())));
+        Event eventNonMatching1EmptyTags = MoreEvents.finalize(signer0, Nip1.createTextNote(signer1.getPublicKey(), "GM"));
 
-        List<Event> events = List.of(eventMatching, eventNonMatching);
+        List<Event> events = List.of(eventMatching, eventNonMatching0, eventNonMatching1EmptyTags);
         List<OkResponse> oks = nostrTemplate.send(events)
                 .collectList()
                 .blockOptional(Duration.ofSeconds(5))
