@@ -1,7 +1,6 @@
 package org.tbk.nostr.demented;
 
 import com.google.protobuf.ByteString;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -792,6 +791,50 @@ class NostrRelaySpecTest {
         assertThat(fetchedEvents.get(0), is(event1Newer));
         assertThat(fetchedEvents.get(1), is(event0));
         assertThat(fetchedEvents.get(2), is(event2Older));
+    }
+
+    @Test
+    void itShouldFetchEventsWithoutTagsWithMultiFilterWithTags() {
+        Signer signer = SimpleSigner.random();
+
+        Event event0 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM"));
+        Event event1Newer = MoreEvents.finalize(signer, event0.toBuilder().setCreatedAt(event0.getCreatedAt() + 1));
+        Event event2Older = MoreEvents.finalize(signer, event0.toBuilder().setCreatedAt(event0.getCreatedAt() - 1));
+
+        List<Event> events = List.of(event0, event1Newer, event2Older);
+        List<OkResponse> oks = nostrTemplate.send(events)
+                .collectList()
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+        assertThat(oks.stream().filter(OkResponse::getSuccess).count(), is((long) events.size()));
+
+        // one filter matches event, others do not match... should return first event
+        Filter matchingFilter = Filter.newBuilder()
+                .addIds(event0.getId())
+                .build();
+
+        Filter.Builder nonMatchingFilter0 = Filter.newBuilder(matchingFilter)
+                .addAuthors(ByteString.copyFrom(SimpleSigner.random().getPublicKey().value.toByteArray()));
+
+        Filter.Builder nonMatchingFilter1 = Filter.newBuilder(matchingFilter)
+                .addAuthors(ByteString.copyFrom(SimpleSigner.random().getPublicKey().value.toByteArray()))
+                .addTags(TagFilter.newBuilder()
+                        .setName(IndexedTag.e.name())
+                        .addValues(EventId.of(event0.getId()).toHex())
+                        .build());
+
+        List<Event> fetchedEvents = nostrTemplate.fetchEvents(ReqRequest.newBuilder()
+                        .setId(MoreSubscriptionIds.random().getId())
+                        .addFilters(nonMatchingFilter0)
+                        .addFilters(matchingFilter)
+                        .addFilters(nonMatchingFilter1)
+                        .build())
+                .collectList()
+                .blockOptional(Duration.ofSeconds(5))
+                .orElseThrow();
+
+        assertThat(fetchedEvents, hasSize(1));
+        assertThat(fetchedEvents.get(0), is(event0));
     }
 
     @RepeatedTest(5)
