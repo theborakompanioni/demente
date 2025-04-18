@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-04-18
 ### Fixed
 - fix: correctly handle events without tags in tag filter
 
@@ -13,5 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release
 
-[Unreleased]: https://github.com/theborakompanioni/demente/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/theborakompanioni/demente/compare/0.1.1...HEAD
+[0.1.1]: https://github.com/theborakompanioni/demente/releases/tag/0.1.1...0.1.0
 [0.1.0]: https://github.com/theborakompanioni/demente/releases/tag/0.1.0
