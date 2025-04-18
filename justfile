@@ -63,14 +63,14 @@ package:
 
 # start the app
 [group("development")]
-start:
+start profiles='development':
     #!/usr/bin/env bash
     declare -r JVM_ARGS="-XX:+UseZGC -XX:+ZGenerational"
-    ./gradlew bootRun -Dspring-boot.run.jvmArguments="$JVM_ARGS"
+    SPRING_PROFILES_ACTIVE={{profiles}} ./gradlew bootRun -Dspring-boot.run.jvmArguments="$JVM_ARGS"
 
 # start the app via its packaged jar (requires 'package' step)
 [group("development")]
-start-jar:
+start-jar profiles='development':
     #!/usr/bin/env bash
     APP_JAR="{{build_dir}}/app.jar"
     if [ ! -f "$APP_JAR" ]; then
@@ -82,7 +82,7 @@ start-jar:
         echo "If you want to recompile the uber jar, run \`./gradlew bootJar\` (or \`just package\`) manually."
     fi
     declare -r JVM_ARGS="-XX:+UseZGC -XX:+ZGenerational"
-    java $JVM_ARGS -jar "$APP_JAR" -Dspring.profiles.active=development
+    java $JVM_ARGS -jar "$APP_JAR" -Dspring.profiles.active={{profiles}}
 
 # create a docker image
 [group("docker")]
