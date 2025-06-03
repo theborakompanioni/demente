@@ -92,7 +92,7 @@ public final class EventEntitySpecifications {
 
     private static Specification<EventEntity> hasAnyTag(TagFilter tagFilter) {
         if (tagFilter.getName().length() != 1) {
-            return Specification.where(null);
+            return empty();
         }
 
         IndexedTag indexedTag = IndexedTag.valueOf(tagFilter.getName());
@@ -142,14 +142,14 @@ public final class EventEntitySpecifications {
                 .map(Filter::getSince)
                 .map(Instant::ofEpochSecond)
                 .map(EventEntitySpecifications::isCreatedAfterInclusive)
-                .orElseGet(() -> Specification.where(null));
+                .orElseGet(EventEntitySpecifications::empty);
 
         Specification<EventEntity> untilSpecification = Optional.of(filter)
                 .filter(it -> it.hasField(untilFieldDescriptor))
                 .map(Filter::getUntil)
                 .map(Instant::ofEpochSecond)
                 .map(EventEntitySpecifications::isCreatedBeforeInclusive)
-                .orElseGet(() -> Specification.where(null));
+                .orElseGet(EventEntitySpecifications::empty);
 
         return Specification.allOf(
                 idsSpecification,
@@ -159,6 +159,10 @@ public final class EventEntitySpecifications {
                 sinceSpecification,
                 untilSpecification
         );
+    }
+
+    private static Specification<EventEntity> empty() {
+        return (root, query, builder) -> null;
     }
 }
 
