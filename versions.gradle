@@ -18,9 +18,9 @@ ext {
     findsecbugsPluginVersion = '1.12.0'
     springBootGradlePluginVersion = '3.4.4'
     springBootVersion = springBootGradlePluginVersion
-    springShellVersion = '3.3.3'
+    springShellVersion = '3.4.0'
     protobufGradleVersion = '0.9.4'
-    nostrSpringBootStarterVersion = '0.3.0'
+    nostrSpringBootStarterVersion = '0.4.0'
 }
 
 // hack: 2021-11-10T00:00Z - change this timestamp to invalidate GitHub Actions gradle caches.
