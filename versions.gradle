@@ -12,7 +12,7 @@ ext {
     acinqLightningKmpVersion = '1.9.0' // keep in sync with `acinqBitcoinKmpVersion`
     sqliteVersion = '3.49.1.0'
     lombokVersion = '1.18.30'
-    springdocOpenApiVersion = '2.3.0'
+    springdocOpenApiVersion = '2.8.8'
     checkstyleVersion = '10.3.4'
     findsecbugsPluginVersion = '1.12.0'
     springBootGradlePluginVersion = '3.5.0'

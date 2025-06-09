@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - upgrade: update bitcoin-kmp from v0.20.0 to v0.22.1
 - upgrade: update secp256k1-kmp from v0.15.0 to v0.17.1
 - upgrade: update nostr-spring-boot-starter from v0.3.0 to v0.4.0
+- upgrade: update springdoc-openapi from v2.3.0 to v2.8.8
 
 ## [0.1.1] - 2025-04-18
 ### Fixed
