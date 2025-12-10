@@ -11,7 +11,7 @@ ext {
     acinqBitcoinKmpVersion = '0.22.1' // keep in sync with `acinqSecp256k1KmpVersion`
     acinqLightningKmpVersion = '1.9.0' // keep in sync with `acinqBitcoinKmpVersion`
     sqliteVersion = '3.49.1.0'
-    lombokVersion = '1.18.30'
+    lombokVersion = '1.18.42'
     springdocOpenApiVersion = '2.8.12'
     checkstyleVersion = '10.3.4'
     findsecbugsPluginVersion = '1.12.0'
