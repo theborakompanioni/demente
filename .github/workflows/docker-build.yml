@@ -20,7 +20,7 @@ jobs:
       docker_image_name: ${{ steps.dotenv.outputs.docker_image_name }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Read .env file
         id: dotenv
@@ -33,7 +33,7 @@ jobs:
     needs: readenv
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
