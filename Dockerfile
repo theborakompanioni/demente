@@ -10,7 +10,7 @@ RUN mv /app/src/demented/build/libs/*-boot.jar app.jar \
 
 FROM ghcr.io/theborakompanioni/java-healthcheck:master@sha256:fba2caf06a8b1f324d18485dbf9389f435b9972ec5fa772f56c012ee9bb77c44 AS healthcheck
 
-FROM azul/zulu-openjdk-alpine:21.0.9-jre-headless@sha256:39028d7bc400c64c27261655edeaddeea2c63aeddb2f65e1c1ccd85b5e90c0a2
+FROM azul/zulu-openjdk-alpine:25.0.1-jre-headless@sha256:5499f0c1453d7e7111501b28b21f173b1ec88a48719b7d5b060b0e6461c315b3
 
 RUN addgroup --system --gid 1000 app \
   && adduser --system --uid 1000 --ingroup app --disabled-password app
