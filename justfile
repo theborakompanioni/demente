@@ -56,6 +56,11 @@ test-integration:
 test-all:
     @./gradlew test integrationTest --rerun-tasks --no-parallel
 
+# build javadocs
+[group("development")]
+javadoc:
+    @./gradlew javadoc -PjavadocEnabled
+
 # package the app to create an uber jar
 [group("development")]
 package:
