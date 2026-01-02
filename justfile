@@ -66,6 +66,21 @@ javadoc:
 package:
     @./gradlew bootJar --rerun-tasks
 
+# check style
+[group("development")]
+checkstyle:
+    @./gradlew checkstyleMain checkstyleTest checkstyleIntegTest
+
+# spot bugs
+[group("development")]
+spotbugs:
+    @./gradlew spotbugsMain spotbugsTest spotbugsIntegTest
+
+# lint files
+[group("development")]
+lint:
+    @./gradlew autoLintGradle --no-parallel
+
 # start the app
 [group("development")]
 start profiles='development':
