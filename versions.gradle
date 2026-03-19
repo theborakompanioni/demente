@@ -15,7 +15,7 @@ ext {
     springdocOpenApiVersion = '2.8.12'
     checkstyleVersion = '13.3.0'
     findsecbugsPluginVersion = '1.14.0'
-    springBootGradlePluginVersion = '3.5.11'
+    springBootGradlePluginVersion = '3.5.12'
     springBootVersion = springBootGradlePluginVersion
     springShellVersion = '3.4.1'
     protobufGradleVersion = '0.9.6'
