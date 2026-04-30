@@ -1,6 +1,6 @@
 FROM ghcr.io/theborakompanioni/java-healthcheck:master@sha256:fba2caf06a8b1f324d18485dbf9389f435b9972ec5fa772f56c012ee9bb77c44 AS healthcheck
 
-FROM azul/zulu-openjdk-alpine:21.0.10-jre-headless@sha256:c1ccb8a1912bbff939a99c02297782d6c7d00a5bb8598a9e1134cdd12cf3348d
+FROM azul/zulu-openjdk-alpine:21.0.11-jre-headless@sha256:b7a736aa28af4d9350f5cedfe44dac75c83b29de5f64770241d289504cbb1c06
 
 ARG JAR_FILE=demented/build/libs/*-boot.jar
 COPY ${JAR_FILE} /app.jar
