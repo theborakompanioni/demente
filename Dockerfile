@@ -8,7 +8,7 @@ WORKDIR /app/build
 RUN mv /app/src/demented/build/libs/*-boot.jar app.jar \
   && rm -rf /app/src
 
-FROM ghcr.io/theborakompanioni/java-healthcheck:master@sha256:fba2caf06a8b1f324d18485dbf9389f435b9972ec5fa772f56c012ee9bb77c44 AS healthcheck
+FROM ghcr.io/theborakompanioni/java-healthcheck:master@sha256:2421f2124482223f8548c74a03df06bcf6aba47c7cc74dd91ae3c8db1ed20e35 AS healthcheck
 
 FROM azul/zulu-openjdk-alpine:21.0.11-jre-headless@sha256:b7a736aa28af4d9350f5cedfe44dac75c83b29de5f64770241d289504cbb1c06
 
