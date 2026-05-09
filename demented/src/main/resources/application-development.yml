@@ -14,3 +14,10 @@ spring.datasource.url: 'jdbc:sqlite:demented-dev.db?foreign_keys=true&journal_mo
 
 spring.jpa.properties.hibernate.format_sql: true
 spring.jpa.properties.hibernate.show_sql: true
+
+management.endpoints.web.exposure.include: '*'
+management.metrics.tags.service.name: ${spring.application.name}
+management.tracing.sampling.probability: 1.0
+management.otlp.metrics.export.url: http://localhost:4318/v1/metrics
+management.otlp.tracing.endpoint: http://localhost:4318/v1/traces
+management.otlp.logging.endpoint: http://localhost:4318/v1/logs

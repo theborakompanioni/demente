@@ -36,6 +36,20 @@ services:
       postgres:
         condition: service_healthy
 
+  lgtm-stack:
+    image: grafana/otel-lgtm:0.27.1@sha256:f533fb9c059aad2d47658e9dc059289755d992404b62168b40b3fbcbe4623355
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
+    container_name: lgtm-stack
+    environment:
+      - OTEL_METRIC_EXPORT_INTERVAL=30000
+    ports:
+      - "3000:3000" # grafana
+      - "3200:3200" # tempo
+      - "4040:4040" # Pyroscope
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+      - "9090:9090" # Prometheus
+
 volumes:
   demente-postgres-data:
   demente-pgadmin-data:

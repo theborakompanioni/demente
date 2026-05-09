@@ -40,6 +40,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    // TODO: needs update to spring v4
+    implementation 'org.springframework.boot:spring-boot-starter-opentelemetry'
 
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
