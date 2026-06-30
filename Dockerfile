@@ -1,4 +1,4 @@
-FROM gradle:9.6-jdk21-alpine@sha256:6155b55fdaf8d6daad7904630ea2ced91ac3d337b78f659a356d5c50136df2b1 AS builder
+FROM gradle:9.6-jdk21-alpine@sha256:615d75ef01f9c1aacab46fd022828a6d35738308fe89b64be3ec7e113af03c00 AS builder
 WORKDIR /app/src
 
 COPY ./ ./
