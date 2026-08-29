@@ -8,7 +8,7 @@ ext {
     jmoleculesBomVersion = '2025.0.2'
     bytebuddyPluginVersion = '1.18.12' // keep in sync with `jmoleculesBomVersion`
     acinqSecp256k1KmpVersion = '0.21.0'
-    acinqBitcoinKmpVersion = '0.28.1' // keep in sync with `acinqSecp256k1KmpVersion`
+    acinqBitcoinKmpVersion = '0.31.0' // keep in sync with `acinqSecp256k1KmpVersion`
     acinqLightningKmpVersion = '1.11.2' // keep in sync with `acinqBitcoinKmpVersion`
     sqliteVersion = '3.53.4.0'
     lombokVersion = '1.18.46'
