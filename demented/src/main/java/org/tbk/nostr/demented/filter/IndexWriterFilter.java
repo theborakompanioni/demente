@@ -28,10 +28,9 @@ public class IndexWriterFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        if (servletRequest instanceof HttpServletRequest httpServletRequest &&
-            servletResponse instanceof HttpServletResponse httpServletResponse) {
+        if (servletRequest instanceof HttpServletRequest httpServletRequest) {
             if (isIndexHtmlRequest(httpServletRequest)) {
-                writeIndexHtml(httpServletResponse);
+                writeIndexHtml(servletResponse);
                 return;
             }
         }
@@ -39,13 +38,13 @@ public class IndexWriterFilter implements Filter {
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-    private void writeIndexHtml(HttpServletResponse response) throws IOException {
+    private void writeIndexHtml(ServletResponse response) throws IOException {
         response.setContentType(MediaType.TEXT_HTML_VALUE);
         response.setContentLength(content.length);
         response.getOutputStream().write(content);
     }
 
-    private boolean isIndexHtmlRequest(HttpServletRequest request) {
+    private static boolean isIndexHtmlRequest(HttpServletRequest request) {
         boolean isGetRequest = HttpMethod.GET.name().equalsIgnoreCase(request.getMethod());
         if (!isGetRequest) {
             return false;
@@ -65,7 +64,7 @@ public class IndexWriterFilter implements Filter {
         return true;
     }
 
-    private boolean hasAcceptHeaderWithValue(HttpServletRequest request, String requiredValue) {
+    private static boolean hasAcceptHeaderWithValue(HttpServletRequest request, String requiredValue) {
         return headerMatches(request, HttpHeaders.ACCEPT, it -> Arrays.stream(it.split(","))
                 .anyMatch(val -> val.equalsIgnoreCase(requiredValue)));
     }
