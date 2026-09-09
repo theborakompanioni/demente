@@ -54,8 +54,8 @@ class NostrRelaySpecTest {
                 .orElseThrow();
 
         assertThat(ok.getEventId(), is(event.getId()));
-        assertThat(ok.getSuccess(), is(true));
         assertThat(ok.getMessage(), is(""));
+        assertThat(ok.getSuccess(), is(true));
     }
 
     @Test
@@ -74,8 +74,8 @@ class NostrRelaySpecTest {
                 .orElseThrow();
 
         assertThat(ok.getEventId(), is(event.getId()));
-        assertThat(ok.getSuccess(), is(true));
         assertThat(ok.getMessage(), is(""));
+        assertThat(ok.getSuccess(), is(true));
     }
 
     @Test
@@ -89,16 +89,16 @@ class NostrRelaySpecTest {
                 .orElseThrow();
 
         assertThat(ok0.getEventId(), is(event.getId()));
-        assertThat(ok0.getSuccess(), is(true));
         assertThat(ok0.getMessage(), is(""));
+        assertThat(ok0.getSuccess(), is(true));
 
         OkResponse ok1 = nostrTemplate.send(event)
                 .blockOptional(Duration.ofSeconds(5))
                 .orElseThrow();
 
         assertThat(ok1.getEventId(), is(event.getId()));
-        assertThat(ok1.getSuccess(), is(false));
         assertThat(ok1.getMessage(), is("duplicate: Already have this event."));
+        assertThat(ok1.getSuccess(), is(false));
     }
 
     @Test
@@ -116,8 +116,8 @@ class NostrRelaySpecTest {
                 .orElseThrow();
 
         assertThat(ok.getEventId(), is(invalidEvent.getId()));
-        assertThat(ok.getSuccess(), is(false));
         assertThat(ok.getMessage(), is("invalid: Invalid id."));
+        assertThat(ok.getSuccess(), is(false));
     }
 
     @Test
@@ -136,8 +136,8 @@ class NostrRelaySpecTest {
         assertThat(oks, hasSize(events.size()));
 
         for (OkResponse ok : oks) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid kind."));
+            assertThat(ok.getSuccess(), is(false));
         }
     }
 
@@ -158,8 +158,8 @@ class NostrRelaySpecTest {
         assertThat(oks, hasSize(events.size()));
 
         for (OkResponse ok : oks) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid created timestamp."));
+            assertThat(ok.getSuccess(), is(false));
         }
     }
 
@@ -187,8 +187,8 @@ class NostrRelaySpecTest {
                 .orElseThrow();
 
         assertThat(ok.getEventId(), is(invalidEvent.getId()));
-        assertThat(ok.getSuccess(), is(false));
         assertThat(ok.getMessage(), is("invalid: Invalid signature."));
+        assertThat(ok.getSuccess(), is(false));
     }
 
     @Test
@@ -214,8 +214,8 @@ class NostrRelaySpecTest {
         assertThat(oks, hasSize(events.size()));
 
         for (OkResponse ok : oks) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid tag 'e'."));
+            assertThat(ok.getSuccess(), is(false));
         }
     }
 
@@ -237,8 +237,8 @@ class NostrRelaySpecTest {
         assertThat(oks, hasSize(events.size()));
 
         for (OkResponse ok : oks) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid tag 'e'."));
+            assertThat(ok.getSuccess(), is(false));
         }
     }
 
@@ -267,8 +267,8 @@ class NostrRelaySpecTest {
         assertThat(oks, hasSize(events.size()));
 
         for (OkResponse ok : oks) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid tag 'p'."));
+            assertThat(ok.getSuccess(), is(false));
         }
     }
 
@@ -288,8 +288,8 @@ class NostrRelaySpecTest {
         assertThat(oks, hasSize(events.size()));
 
         for (OkResponse ok : oks) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid tag 'p'."));
+            assertThat(ok.getSuccess(), is(false));
         }
     }
 
@@ -319,8 +319,8 @@ class NostrRelaySpecTest {
         assertThat(oks0, hasSize(events0.size()));
 
         for (OkResponse ok : oks0) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid tag 'a'."));
+            assertThat(ok.getSuccess(), is(false));
         }
 
         Event invalidEvent6 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM6")
@@ -335,8 +335,8 @@ class NostrRelaySpecTest {
         assertThat(oks1, hasSize(events1.size()));
 
         for (OkResponse ok : oks1) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid pubkey in tag 'a'."));
+            assertThat(ok.getSuccess(), is(false));
         }
     }
 
@@ -356,8 +356,8 @@ class NostrRelaySpecTest {
         assertThat(oks, hasSize(events.size()));
 
         for (OkResponse ok : oks) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid tag 'a'."));
+            assertThat(ok.getSuccess(), is(false));
         }
     }
 
@@ -373,7 +373,6 @@ class NostrRelaySpecTest {
                 .addTags(MoreTags.named(IndexedTag.k.name(), "")));
         Event invalidEvent3 = MoreEvents.finalize(signer, Nip1.createTextNote(signer.getPublicKey(), "GM3")
                 .addTags(MoreTags.named(IndexedTag.k.name(), "invalid")));
-        ;
 
         List<Event> events = List.of(invalidEvent0, invalidEvent1, invalidEvent2, invalidEvent3);
         List<OkResponse> oks = nostrTemplate.send(events)
@@ -384,8 +383,8 @@ class NostrRelaySpecTest {
         assertThat(oks, hasSize(events.size()));
 
         for (OkResponse ok : oks) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid tag 'k'."));
+            assertThat(ok.getSuccess(), is(false));
         }
     }
 
@@ -411,8 +410,8 @@ class NostrRelaySpecTest {
         assertThat(oks, hasSize(events.size()));
 
         for (OkResponse ok : oks) {
-            assertThat(ok.getSuccess(), is(false));
             assertThat(ok.getMessage(), is("invalid: Invalid tag name."));
+            assertThat(ok.getSuccess(), is(false));
         }
     }
 
@@ -433,8 +432,8 @@ class NostrRelaySpecTest {
                 invalidEvent0.getCreatedAt(),
                 relayProperties.getCreatedAtLowerLimit()
         );
-        assertThat(ok0.getSuccess(), is(false));
         assertThat(ok0.getMessage(), is(expectedMessage));
+        assertThat(ok0.getSuccess(), is(false));
     }
 
     @Test
@@ -454,8 +453,8 @@ class NostrRelaySpecTest {
                 invalidEvent0.getCreatedAt(),
                 relayProperties.getCreatedAtUpperLimit()
         );
-        assertThat(ok0.getSuccess(), is(false));
         assertThat(ok0.getMessage(), is(expectedMessage));
+        assertThat(ok0.getSuccess(), is(false));
     }
 
     @Test
@@ -853,8 +852,8 @@ class NostrRelaySpecTest {
                 .orElseThrow();
 
         assertThat(ok0.getEventId(), is(ephemeralEvent0.getId()));
-        assertThat(ok0.getSuccess(), is(true));
         assertThat(ok0.getMessage(), is(""));
+        assertThat(ok0.getSuccess(), is(true));
 
         Optional<Event> fetchedEvent0 = nostrTemplate.fetchEventById(EventId.of(ephemeralEvent0))
                 .blockOptional(Duration.ofSeconds(5));
@@ -1273,7 +1272,7 @@ class NostrRelaySpecTest {
 
         assertThat(response.getKindCase(), is(Response.KindCase.NOTICE));
         assertThat(response.getNotice().getMessage(), startsWith("""
-                Error while parsing message: com.fasterxml.jackson.jr.ob.JSONObjectException: No content to map due to end-of-input
+                Error while parsing message: No content to map due to end-of-input
                 """.replace("\n", "")));
     }
 
@@ -1305,7 +1304,7 @@ class NostrRelaySpecTest {
 
         assertThat(response.getKindCase(), is(Response.KindCase.NOTICE));
         assertThat(response.getNotice().getMessage(), startsWith("""
-                Error while parsing message: com.fasterxml.jackson.jr.private_.JsonParseException: Unrecognized token 'GM': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+                Error while parsing message: Unrecognized token 'GM': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
                 """.replace("\n", "")));
     }
 
@@ -1390,8 +1389,8 @@ class NostrRelaySpecTest {
                 .orElseThrow();
 
         assertThat(response.getEventId(), is(authEvent.getId()));
-        assertThat(response.getSuccess(), is(false));
         assertThat(response.getMessage(), is("error: AUTH is not supported."));
+        assertThat(response.getSuccess(), is(false));
     }
 
     @Test
@@ -1405,7 +1404,8 @@ class NostrRelaySpecTest {
                                 .addFilters(Filter.newBuilder()
                                         .addAuthors(ByteString.fromHex(signer.getPublicKey().value.toHex()))
                                         .build())
-                                .build()).build())
+                                .build())
+                        .build())
                 .next()
                 .blockOptional(Duration.ofSeconds(5))
                 .orElseThrow();

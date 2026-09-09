@@ -43,7 +43,12 @@ contacts {
     }
 }
 
-configurations.all {
+allprojects {
+    // pin exact version as spring might pull in a different (potentially older) protoc runtime dependency
+    ext['protobuf-java.version'] = "${rootProject.ext.protobufVersion}"
+}
+
+configurations.configureEach {
     resolutionStrategy {
         // check for updates in modules every build
         cacheChangingModulesFor 0, 'seconds'
@@ -120,17 +125,17 @@ subprojects {
     dependencyManagement {
         imports {
             mavenBom SpringBootPlugin.BOM_COORDINATES
-            mavenBom "org.jmolecules:jmolecules-bom:${jmoleculesBomVersion}"
+            mavenBom "org.jmolecules:jmolecules-bom:${rootProject.ext.jmoleculesBomVersion}"
         }
     }
 
     dependencies {
         compileOnly "com.github.spotbugs:spotbugs-annotations:${spotbugs.toolVersion.get()}"
         testCompileOnly "com.github.spotbugs:spotbugs-annotations:${spotbugs.toolVersion.get()}"
-        spotbugsPlugins "com.h3xstream.findsecbugs:findsecbugs-plugin:${findsecbugsPluginVersion}"
+        spotbugsPlugins "com.h3xstream.findsecbugs:findsecbugs-plugin:${rootProject.ext.findsecbugsPluginVersion}"
 
         implementation 'org.slf4j:slf4j-api'
-        implementation "com.google.guava:guava:${guavaVersion}"
+        implementation "com.google.guava:guava:${rootProject.ext.guavaVersion}"
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -176,8 +181,6 @@ subprojects {
         }
 
         bootJar {
-            // creates a launch script for the executable jar
-            launchScript()
             archiveClassifier.set('boot')
 
             exclude('*-local.yml')
@@ -223,12 +226,12 @@ subprojects {
         }*/
     }
 
-    artifacts {
-        archives testJar
+    tasks.named("assemble") {
+        dependsOn(testJar)
     }
 
     lombok {
-        version = "${lombokVersion}"
+        version = "${rootProject.ext.lombokVersion}"
     }
 
     tasks.withType(Test).configureEach {
@@ -239,16 +242,19 @@ subprojects {
             exceptionFormat = TestExceptionFormat.FULL
             showCauses = true
             showStackTraces = true
+        }
 
-            afterSuite { desc, result ->
-                if (!desc.parent) { // will match the outermost suite
+        addTestListener(new TestListener() {
+            @Override
+            void afterSuite(TestDescriptor suite, TestResult result) {
+                if (!suite.parent) { // will match the outermost suite
                     def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
                     def startItem = '|  ', endItem = '  |'
                     def repeatLength = startItem.length() + output.length() + endItem.length()
                     println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
                 }
             }
-        }
+        })
     }
 
     tasks.register('dependencyTree', DependencyReportTask) {}
@@ -281,7 +287,7 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = "${checkstyleVersion}"
+        toolVersion = "${rootProject.ext.checkstyleVersion}"
         configFile = rootProject.file('./checkstyle.xml')
         maxErrors = 0
         ignoreFailures = false
@@ -315,11 +321,4 @@ subprojects {
                 'Build-Url',
         ]
     }
-}
-
-// disable test tasks in check phase for all '*-example-application' subprojects.
-// you can invoke them manually via `./gradlew check -PexampleTest`
-configure(subprojects.findAll { project -> project.name.indexOf('-example-application') > 0 }) {
-    test.onlyIf { true }
-    integrationTest.onlyIf { true }
 }

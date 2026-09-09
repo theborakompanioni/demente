@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- upgrade: update spring-boot from v3.5.8 to v4.1.1
+- upgrade: update nostr-spring-boot-starter from v0.4.0 to v0.6.0
+
 ## [0.2.0] - 2026-01-02
 ### Changed
 - upgrade: update spring-boot from v3.4.4 to v3.5.8

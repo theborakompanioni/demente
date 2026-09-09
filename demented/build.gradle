@@ -10,21 +10,21 @@ byteBuddy {
 }
 
 dependencies {
-    implementation "io.github.theborakompanioni:nostr-relay-utils:${nostrSpringBootStarterVersion}"
-    implementation "io.github.theborakompanioni:nostr-relay-starter:${nostrSpringBootStarterVersion}"
-    implementation "io.github.theborakompanioni:nostr-relay-plugin-allowlist-starter:${nostrSpringBootStarterVersion}"
+    implementation "io.github.theborakompanioni:nostr-relay-utils:${rootProject.ext.nostrSpringBootStarterVersion}"
+    implementation "io.github.theborakompanioni:nostr-relay-starter:${rootProject.ext.nostrSpringBootStarterVersion}"
+    implementation "io.github.theborakompanioni:nostr-relay-plugin-allowlist-starter:${rootProject.ext.nostrSpringBootStarterVersion}"
 
-    implementation "fr.acinq.bitcoin:bitcoin-kmp-jvm:${acinqBitcoinKmpVersion}"
-    implementation "fr.acinq.secp256k1:secp256k1-kmp-jni-jvm:${acinqSecp256k1KmpVersion}"
+    implementation "fr.acinq.bitcoin:bitcoin-kmp-jvm:${rootProject.ext.acinqBitcoinKmpVersion}"
+    implementation "fr.acinq.secp256k1:secp256k1-kmp-jni-jvm:${rootProject.ext.acinqSecp256k1KmpVersion}"
 
-    implementation "com.fasterxml.jackson.jr:jackson-jr-all:${jacksonJrVersion}"
+    implementation "tools.jackson.jr:jackson-jr-all:${rootProject.ext.jacksonJrVersion}"
 
     implementation 'io.projectreactor:reactor-core'
 
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
-    implementation "org.xerial:sqlite-jdbc:${sqliteVersion}"
-    implementation "org.postgresql:postgresql:${postgresqlVersion}"
+    implementation "org.xerial:sqlite-jdbc:${rootProject.ext.sqliteVersion}"
+    implementation "org.postgresql:postgresql:${rootProject.ext.postgresqlVersion}"
     implementation 'org.hibernate.orm:hibernate-community-dialects'
 
     implementation 'org.jmolecules:jmolecules-ddd'
@@ -36,15 +36,17 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
-    testImplementation "io.github.theborakompanioni:nostr-template:${nostrSpringBootStarterVersion}"
-    testImplementation "io.github.theborakompanioni:nostr-client:${nostrSpringBootStarterVersion}"
-    testImplementation "io.github.theborakompanioni:nostr-persona:${nostrSpringBootStarterVersion}"
+    testImplementation "io.github.theborakompanioni:nostr-template:${rootProject.ext.nostrSpringBootStarterVersion}"
+    testImplementation "io.github.theborakompanioni:nostr-client:${rootProject.ext.nostrSpringBootStarterVersion}"
+    testImplementation "io.github.theborakompanioni:nostr-persona:${rootProject.ext.nostrSpringBootStarterVersion}"
     integTestImplementation 'org.springframework.boot:spring-boot-docker-compose'
+    integTestImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 }
