@@ -104,6 +104,17 @@ start-jar profiles='development':
     declare -r JVM_ARGS="-XX:+UseZGC -XX:+ZGenerational"
     java $JVM_ARGS -jar "$APP_JAR" -Dspring.profiles.active={{profiles}}
 
+# update dependency lockfiles
+[group("development")]
+update-lockfiles *args='':
+    @./gradlew \
+     -Dorg.gradle.caching=false \
+     -Dorg.gradle.configureondemand=false \
+     -Dorg.gradle.parallel=false \
+     dependencies dependencyTree \
+     --write-locks \
+     {{args}}
+
 # create a docker image
 [group("docker")]
 docker-build:
