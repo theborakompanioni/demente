@@ -2,7 +2,7 @@ ext {
     jacksonJrVersion = '3.2.2'
     guavaVersion = '33.7.1-jre'
     protobufVersion = '4.36.1'
-    postgresqlVersion = '42.7.13'
+    postgresqlVersion = '42.7.14'
     jmoleculesBomVersion = '2025.0.2'
     bytebuddyPluginVersion = '1.18.13' // keep in sync with `jmoleculesBomVersion`
     acinqSecp256k1KmpVersion = '0.21.0'
